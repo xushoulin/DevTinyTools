@@ -84,6 +84,11 @@ src/
     ads.ts                 advertising configuration (disabled)
     clipboard.ts           clipboard helper with fallback
     download.ts            blob download + safe filenames
+public/
+  google5bbee8250864d585.html
+                           Google Search Console HTML-file verification token.
+                           The file name and its single line of content must
+                           stay byte-identical, or verification fails.
 ```
 
 ## Privacy guarantees enforced by the code
