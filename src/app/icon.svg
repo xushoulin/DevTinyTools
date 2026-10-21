@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="DevTinyTools">
+  <rect width="32" height="32" rx="7" fill="#0f172a" />
+  <path d="M13.4 9.6c-1.8 0-2.5 1-2.5 2.5v2.2c0 1.1-.9 1.9-2.1 1.9v.6c1.2 0 2.1.8 2.1 1.9v2.2c0 1.5.7 2.5 2.5 2.5" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M18.6 9.6c1.8 0 2.5 1 2.5 2.5v2.2c0 1.1.9 1.9 2.1 1.9v.6c-1.2 0-2.1.8-2.1 1.9v2.2c0 1.5-.7 2.5-2.5 2.5" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
