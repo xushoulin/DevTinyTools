@@ -16,9 +16,46 @@ export const SITE_DESCRIPTION =
  */
 export const FALLBACK_SITE_URL = "https://devtinytools.vercel.app";
 
-/** Contact address is optional; we never invent one when it is not configured. */
-export const CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || null;
+/**
+ * Contact address is optional; we never invent one when it is not configured.
+ *
+ * There are two ways to set it, pick either:
+ *
+ * 1. Set the environment variable NEXT_PUBLIC_CONTACT_EMAIL (exact ASCII name,
+ *    no trailing space or colon) in Vercel or in `.env.local`. Requires a
+ *    rebuild, because public env vars are inlined at build time.
+ * 2. Edit `CONTACT_EMAIL_FALLBACK` below and push — Vercel redeploys on push,
+ *    so no dashboard access is needed.
+ */
+const CONTACT_EMAIL_FALLBACK: string | null = null;
+
+/** Reject obviously broken values so a stray "：" or space cannot leak into a mailto link. */
+export function normalizeContactEmail(
+  value: string | null | undefined,
+): string | null {
+  if (!value) return null;
+
+  // Deliberately ASCII-only: a full-width colon or a smart quote copied from a
+  // chat message must be rejected, not rendered into a broken mailto link.
+  const trimmed = value.trim();
+  const isEmail =
+    /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(
+      trimmed,
+    );
+
+  return isEmail ? trimmed : null;
+}
+
+/**
+ * Resolve the public contact address. Returns null when nothing usable is
+ * configured, so callers can render an honest "not published yet" state.
+ */
+export function getContactEmail(): string | null {
+  return (
+    normalizeContactEmail(process.env.NEXT_PUBLIC_CONTACT_EMAIL) ??
+    normalizeContactEmail(CONTACT_EMAIL_FALLBACK)
+  );
+}
 
 function normalizeUrl(value: string | undefined): string | null {
   if (!value) return null;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ContentSection, ProseList } from "@/components/content-section";
 import { pageMetadata } from "@/lib/metadata";
-import { CONTACT_EMAIL, SITE_NAME } from "@/lib/site";
+import { getContactEmail, SITE_NAME } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "Contact",
@@ -12,6 +12,8 @@ export const metadata = pageMetadata({
 });
 
 export default function ContactPage() {
+  const contactEmail = getContactEmail();
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
@@ -25,7 +27,7 @@ export default function ContactPage() {
       </p>
 
       <div className="mt-8 space-y-9">
-        {CONTACT_EMAIL ? (
+        {contactEmail ? (
           <section aria-labelledby="email-heading">
             <h2
               id="email-heading"
@@ -35,10 +37,10 @@ export default function ContactPage() {
             </h2>
             <div className="mt-3 rounded-lg border border-slate-200 bg-white p-4">
               <a
-                href={`mailto:${CONTACT_EMAIL}`}
+                href={`mailto:${contactEmail}`}
                 className="font-mono text-sm text-blue-700 underline underline-offset-2"
               >
-                {CONTACT_EMAIL}
+                {contactEmail}
               </a>
               <p className="mt-2 text-[13px] leading-relaxed text-slate-600">
                 This is the only official address for the site. Messages are read and

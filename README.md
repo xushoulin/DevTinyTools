@@ -47,6 +47,14 @@ Copy `.env.example` to `.env.local` and adjust:
 | `NEXT_PUBLIC_SITE_URL`      | Canonical origin used by metadata, `robots.txt` and `sitemap.xml`.      |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | When set, `/contact` shows a `mailto:` link. When empty, nothing is shown. |
 
+Both are inlined at build time, so changing either one requires a new deployment.
+
+The contact address can also be set in code instead of the dashboard: edit
+`CONTACT_EMAIL_FALLBACK` in `src/lib/site.ts` and push. Values that do not look
+like an email address are ignored rather than rendered into a broken `mailto:`
+link, which is why a stray full-width colon or trailing space in the dashboard
+field silently results in "no address published yet".
+
 Defaults: `http://localhost:3000` in development and
 `https://devtinytools.vercel.app` in production. A localhost value is ignored in
 a production build so a misconfigured environment cannot publish localhost
