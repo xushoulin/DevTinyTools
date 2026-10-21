@@ -10,7 +10,7 @@ import { PLANNED_TOOLS, TOOLS } from "@/lib/tools";
 export const metadata = pageMetadata({
   title: `${SITE_NAME} — Free Online Developer Tools`,
   description:
-    "Free browser-based developer tools. Format, validate and minify JSON with no uploads, no sign-up and no tracking.",
+    "Free browser-based developer tools. Format, validate and minify JSON with no uploads and no sign-up.",
   path: "/",
 });
 
@@ -68,7 +68,7 @@ export default function HomePage() {
               <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
                 <li>No uploads</li>
                 <li>No sign-up</li>
-                <li>No tracking cookies</li>
+                <li>Your JSON stays in this tab</li>
                 <li>Works offline once loaded</li>
               </ul>
             </div>

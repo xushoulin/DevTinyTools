@@ -79,7 +79,7 @@ export default function AboutPage() {
               </>,
               <>
                 <strong className="font-medium text-slate-900">Small surface area.</strong>{" "}
-                Few dependencies, no state library, no tracking scripts.
+                Few dependencies and no state library.
               </>,
             ]}
           />

@@ -1,12 +1,22 @@
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ADSENSE_SCRIPT_ENABLED } from "@/lib/ads";
 import { pageMetadata } from "@/lib/metadata";
 import { PRIVACY_LAST_UPDATED, SITE_NAME } from "@/lib/site";
 
+/**
+ * The advertising wording below is driven by the same constant that emits the
+ * AdSense <script> tag, so this page cannot claim "no advertising code" while
+ * the loader is present in the HTML — and cannot describe live ads before they
+ * exist.
+ */
+const ADSENSE_ACTIVE = ADSENSE_SCRIPT_ENABLED;
+
 export const metadata = pageMetadata({
   title: "Privacy Policy",
-  description:
-    "How DevTinyTools handles data: JSON is processed locally in your browser, and the site does not use analytics, advertising cookies or accounts.",
+  description: ADSENSE_ACTIVE
+    ? "How DevTinyTools handles data: JSON is processed locally in your browser, and the only third-party script on the site is the Google AdSense loader."
+    : "How DevTinyTools handles data: JSON is processed locally in your browser, and the site does not use analytics, advertising cookies or accounts.",
   path: "/privacy-policy",
 });
 
@@ -39,10 +49,16 @@ export default function PrivacyPolicyPage() {
         <ul className="mt-2 space-y-1.5 text-[13px] leading-relaxed text-emerald-900">
           <li>JSON you paste is processed inside your browser and is never uploaded.</li>
           <li>There are no accounts, no profiles and no user database.</li>
-          <li>The site sets no cookies and writes nothing to localStorage.</li>
           <li>
-            No analytics and no advertising code are currently active. If that changes, this
-            policy will be updated before the change goes live.
+            This site sets no cookies of its own and writes nothing to localStorage.
+            {ADSENSE_ACTIVE
+              ? " Google AdSense is loaded to verify the site, and Google may set its own cookies — see section 4."
+              : ""}
+          </li>
+          <li>
+            {ADSENSE_ACTIVE
+              ? "No analytics service is installed. The only third-party script is the Google AdSense loader; no ad unit is displayed yet."
+              : "No analytics and no advertising code are currently active. If that changes, this policy will be updated before the change goes live."}
           </li>
         </ul>
       </div>
@@ -90,13 +106,31 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-lg font-semibold text-slate-900">
             4. Cookies and local storage
           </h2>
-          <p className="mt-2">
-            This site does not set cookies and does not write to localStorage or
-            sessionStorage. No consent banner is shown because there is currently nothing to
-            consent to. If cookies are introduced later — for example with an advertising
-            partner — this section will be rewritten and a consent mechanism added where
-            required by law.
-          </p>
+          {ADSENSE_ACTIVE ? (
+            <>
+              <p className="mt-2">
+                This site&apos;s own code sets no cookies and writes nothing to
+                localStorage or sessionStorage — your editor contents are never stored.
+              </p>
+              <p className="mt-2">
+                One third-party script is loaded: the Google AdSense loader. Through it,
+                Google may set or read cookies in your browser and receive technical data
+                such as your IP address and user agent, which it uses for ad delivery,
+                frequency capping, fraud prevention and measurement. Those cookies belong to
+                Google, not to this site, and are covered by Google&apos;s own policies. No
+                personalised advertising is served in regions that require prior consent;
+                that choice is handled by Google&apos;s consent management tools in AdSense.
+              </p>
+            </>
+          ) : (
+            <p className="mt-2">
+              This site does not set cookies and does not write to localStorage or
+              sessionStorage. No consent banner is shown because there is currently nothing
+              to consent to. If cookies are introduced later — for example with an
+              advertising partner — this section will be rewritten and a consent mechanism
+              added where required by law.
+            </p>
+          )}
         </section>
 
         <section id="analytics">
@@ -111,34 +145,72 @@ export default function PrivacyPolicyPage() {
 
         <section id="ads">
           <h2 className="text-lg font-semibold text-slate-900">6. Advertising</h2>
-          <p className="mt-2">
-            The site currently displays no advertising, and no advertising code is loaded.
-            There are reserved positions in the layout for future use, but those positions
-            render nothing while advertising is disabled — an empty placeholder is not shown.
-          </p>
-          <p className="mt-2">
-            If advertising is introduced, it will most likely be Google AdSense. In that case
-            Google and its partners may use cookies or similar technologies to serve and
-            measure ads, and may process data as described in{" "}
-            <a
-              href="https://policies.google.com/technologies/ads"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="text-blue-700 underline underline-offset-2"
-            >
-              Google&apos;s advertising policies
-            </a>
-            . You can review and adjust personalised advertising settings through{" "}
-            <a
-              href="https://myadcenter.google.com/"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="text-blue-700 underline underline-offset-2"
-            >
-              Google My Ad Center
-            </a>
-            . This paragraph describes a possible future state, not a current practice.
-          </p>
+          {ADSENSE_ACTIVE ? (
+            <>
+              <p className="mt-2">
+                This site loads the Google AdSense loader script so that Google can verify
+                ownership of the domain and review the site for advertising. The script is
+                the only third-party code on the page.
+              </p>
+              <p className="mt-2">
+                No ad unit is displayed yet: the reserved positions in the layout render
+                nothing until an ad unit id is configured, and an empty placeholder box is
+                never shown. When ads are enabled, Google and its partners may use cookies or
+                similar technologies to serve and measure them, and may process data as
+                described in{" "}
+                <a
+                  href="https://policies.google.com/technologies/ads"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="text-blue-700 underline underline-offset-2"
+                >
+                  Google&apos;s advertising policies
+                </a>
+                . You can review and adjust personalised advertising settings through{" "}
+                <a
+                  href="https://myadcenter.google.com/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="text-blue-700 underline underline-offset-2"
+                >
+                  Google My Ad Center
+                </a>
+                .
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="mt-2">
+                The site currently displays no advertising, and no advertising code is
+                loaded. There are reserved positions in the layout for future use, but those
+                positions render nothing while advertising is disabled — an empty
+                placeholder is not shown.
+              </p>
+              <p className="mt-2">
+                If advertising is introduced, it will most likely be Google AdSense. In that
+                case Google and its partners may use cookies or similar technologies to serve
+                and measure ads, and may process data as described in{" "}
+                <a
+                  href="https://policies.google.com/technologies/ads"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="text-blue-700 underline underline-offset-2"
+                >
+                  Google&apos;s advertising policies
+                </a>
+                . You can review and adjust personalised advertising settings through{" "}
+                <a
+                  href="https://myadcenter.google.com/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="text-blue-700 underline underline-offset-2"
+                >
+                  Google My Ad Center
+                </a>
+                . This paragraph describes a possible future state, not a current practice.
+              </p>
+            </>
+          )}
         </section>
 
         <section id="third-parties">

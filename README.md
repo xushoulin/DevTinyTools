@@ -84,7 +84,7 @@ src/
     examples.ts            sample documents
     site.ts                site config and URL resolution
     tools.ts               tool registry (nav, cards, sitemap)
-    ads.ts                 advertising configuration (disabled)
+    ads.ts                 AdSense loader + ads.txt configuration
     clipboard.ts           clipboard helper with fallback
     download.ts            blob download + safe filenames
 public/
@@ -103,15 +103,30 @@ public/
 
 ## Advertising
 
-No ad code is loaded. `src/lib/ads.ts` holds the configuration and
-`src/components/ad-slot.tsx` the three reserved positions. With
-`ADS_ENABLED = false` the slot component returns `null`, so no empty boxes
-render.
+`src/lib/ads.ts` holds two independent switches.
 
-To enable later: set `ADS_ENABLED = true`, fill in `ADSENSE_CLIENT` and the ad
-unit ids, then load the AdSense script once in `src/app/layout.tsx`. Reserved
-positions do not affect the tool panes, and reserving them does not imply the
-site is approved for any ad programme.
+`ADSENSE_PUBLISHER_ID` is set, so every page emits Google's AdSense loader in
+the `<head>` and `/ads.txt` serves the matching record:
+
+```
+google.com, pub-XXXX, DIRECT, f08c47fec0942fa0
+```
+
+That is what AdSense needs in order to verify the domain and review it. The
+loader alone displays no ad.
+
+`ADS_ENABLED` is still `false` and every slot id is empty, so the three reserved
+positions in `src/components/ad-slot.tsx` return `null` — no empty box ever
+renders. Enabling a slot requires `ADS_ENABLED = true` **and** an ad unit id.
+
+Both `/ads.txt` and the advertising section of the privacy policy are generated
+from the same constant, so they cannot drift apart. Setting
+`ADSENSE_PUBLISHER_ID = ""` removes the script, makes `/ads.txt` answer 404, and
+reverts the policy to its "no advertising code" wording.
+
+In the AdSense dashboard, enable Google's consent management (Privacy & messaging
+→ GDPR / EEA) before ads are served to visitors in the EEA, the UK or
+Switzerland.
 
 ## Icons
 

@@ -1,22 +1,36 @@
 /**
  * Advertising configuration.
  *
- * The site does NOT serve ads today. This file only describes where an ad unit
- * would go once the site is approved for a program such as Google AdSense.
+ * Two independent switches:
  *
- * To enable a slot later:
- *   1. Get the site approved and copy your publisher id and ad unit ids.
- *   2. Set `ADS_ENABLED = true` and fill in `ADSENSE_CLIENT` plus the slot ids.
- *   3. Load the AdSense script once in `src/app/layout.tsx`.
+ * - `ADSENSE_PUBLISHER_ID` loads Google's AdSense loader script once in the
+ *   page <head> and publishes /ads.txt. This is what AdSense needs in order to
+ *   verify site ownership and review the site. It does not display any ad on
+ *   its own, because no ad unit is rendered until the slots below are filled
+ *   in.
+ * - `ADS_ENABLED` plus a per-slot id turns a reserved region into a real ad
+ *   unit. Those regions stay empty until both are set, so the site never shows
+ *   an empty placeholder box.
  *
- * While `ADS_ENABLED` is false the <AdSlot /> component renders nothing at all,
- * so there is no empty space or placeholder box on the page.
+ * To stop serving AdSense entirely, set `ADSENSE_PUBLISHER_ID` to "". The
+ * script tag disappears from every page, /ads.txt starts returning 404, and the
+ * privacy policy reverts to its "no advertising code" wording automatically —
+ * because the policy reads this same constant.
  */
 
-export const ADS_ENABLED = false;
+/** Publisher id from AdSense → Account → Settings → Account information. */
+export const ADSENSE_PUBLISHER_ID = "pub-2622415797490761";
 
-/** Example format: "ca-pub-0000000000000000". */
-export const ADSENSE_CLIENT = "";
+/** The `ca-` prefixed form used by the loader script and data attributes. */
+export const ADSENSE_CLIENT = ADSENSE_PUBLISHER_ID
+  ? `ca-${ADSENSE_PUBLISHER_ID}`
+  : "";
+
+/** True once a publisher id exists, i.e. the loader script should be emitted. */
+export const ADSENSE_SCRIPT_ENABLED = ADSENSE_CLIENT !== "";
+
+/** Ad units are still off: no slot ids have been created yet. */
+export const ADS_ENABLED = false;
 
 export type AdSlotKey = "toolBelow" | "contentMiddle" | "beforeFooter";
 
@@ -37,4 +51,10 @@ export function isSlotActive(key: AdSlotKey): boolean {
   if (!ADS_ENABLED) return false;
   if (!ADSENSE_CLIENT) return false;
   return Boolean(AD_SLOTS[key]?.slotId);
+}
+
+/** Body of /ads.txt. Google's certification authority id is fixed. */
+export function adsTxtBody(): string | null {
+  if (!ADSENSE_PUBLISHER_ID) return null;
+  return `google.com, ${ADSENSE_PUBLISHER_ID}, DIRECT, f08c47fec0942fa0\n`;
 }

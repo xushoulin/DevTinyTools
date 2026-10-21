@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ADSENSE_CLIENT, ADSENSE_SCRIPT_ENABLED } from "@/lib/ads";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -50,6 +51,20 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
+      <head>
+        {/*
+          AdSense loader. It is emitted in the server HTML so AdSense can find
+          it while verifying the site; it renders no ad until an ad unit from
+          `src/lib/ads.ts` is active.
+        */}
+        {ADSENSE_SCRIPT_ENABLED ? (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            crossOrigin="anonymous"
+          />
+        ) : null}
+      </head>
       <body className="flex min-h-full flex-col">
         <a
           href="#main"

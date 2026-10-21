@@ -72,7 +72,7 @@ export function SiteFooter() {
           <p>
             © {year} {SITE_NAME}. Tools are provided as-is, without warranty.
           </p>
-          <p>No accounts. No uploads. No tracking cookies.</p>
+          <p>No accounts. No uploads. Your JSON never leaves the browser.</p>
         </div>
       </div>
     </footer>
