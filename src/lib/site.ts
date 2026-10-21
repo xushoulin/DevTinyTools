@@ -10,11 +10,18 @@ export const SITE_DESCRIPTION =
   "Small, fast developer tools that run entirely in your browser. Format, validate and minify JSON without uploading your data.";
 
 /**
- * Used when neither NEXT_PUBLIC_SITE_URL nor the Vercel-provided production
- * domain is available, so production builds never emit a localhost canonical
- * URL. Replace with the real domain once a custom domain is attached.
+ * The production origin this site is published on.
+ *
+ * Kept in code rather than left to Vercel's injected
+ * `VERCEL_PROJECT_PRODUCTION_URL`, because that variable resolves to the
+ * *shortest* production domain. Once both `shoulin.shop` and `www.shoulin.shop`
+ * are attached to the project it would pick the apex domain, while the site is
+ * served on `www` — canonicals, Open Graph URLs and sitemap entries would then
+ * disagree with the address Google actually crawls.
+ *
+ * Changing the domain means editing this line and pushing.
  */
-export const FALLBACK_SITE_URL = "https://devtinytools.vercel.app";
+export const PRODUCTION_SITE_URL = "https://www.shoulin.shop";
 
 /**
  * Contact address is optional; we never invent one when it is not configured.
@@ -101,8 +108,12 @@ function isLocalHost(url: string): boolean {
  * Vercel injects the project's production domain at build time, without any
  * manual configuration. It is the shortest custom domain, or the
  * `*.vercel.app` domain when no custom domain exists, and it is present on
- * preview deployments too — exactly what a canonical URL should point at.
- * The value never includes the protocol, so it is normalised here.
+ * preview deployments too. The value never includes the protocol, so it is
+ * normalised here.
+ *
+ * Only used as a safety net when {@link PRODUCTION_SITE_URL} is set to null:
+ * "shortest domain" prefers the apex over `www`, which is not always the host
+ * the site is served on.
  */
 function vercelProductionUrl(
   env: Record<string, string | undefined>,
@@ -126,15 +137,18 @@ function vercelProductionUrl(
  * Resolve the canonical origin for the site.
  *
  * Priority:
- * 1. `NEXT_PUBLIC_SITE_URL` — the explicit override, use this for a custom domain.
- * 2. `VERCEL_PROJECT_PRODUCTION_URL` — supplied by Vercel automatically.
- * 3. `FALLBACK_SITE_URL` in production, `http://localhost:3000` in development.
+ * 1. `NEXT_PUBLIC_SITE_URL` — optional explicit override.
+ * 2. `PRODUCTION_SITE_URL` — the domain pinned in code, used for any
+ *    non-development build.
+ * 3. `VERCEL_PROJECT_PRODUCTION_URL` — only reached if the pin is removed.
+ * 4. `http://localhost:3000` in development.
  *
  * A localhost value is ignored in production, so a misconfigured environment
  * can never publish localhost canonical tags.
  */
 export function resolveSiteUrl(
   env: Record<string, string | undefined> = process.env,
+  pinned: string | null = PRODUCTION_SITE_URL,
 ): string {
   const isProduction = env.NODE_ENV === "production";
 
@@ -143,12 +157,19 @@ export function resolveSiteUrl(
     return configured;
   }
 
+  if (!isProduction) return "http://localhost:3000";
+
+  const pinnedUrl = normalizeUrl(pinned ?? undefined);
+  if (pinnedUrl && !isLocalHost(pinnedUrl)) {
+    return pinnedUrl;
+  }
+
   const fromVercel = vercelProductionUrl(env);
   if (fromVercel && !isLocalHost(fromVercel)) {
     return fromVercel;
   }
 
-  return isProduction ? FALLBACK_SITE_URL : "http://localhost:3000";
+  return PRODUCTION_SITE_URL;
 }
 
 export const SITE_URL = resolveSiteUrl();

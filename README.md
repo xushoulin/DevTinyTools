@@ -44,7 +44,7 @@ Both variables are optional. A Vercel deployment needs no configuration at all.
 
 | Variable                    | Purpose                                                                 |
 | --------------------------- | ----------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`      | Forces the canonical origin used by metadata, `robots.txt` and `sitemap.xml`. |
+| `NEXT_PUBLIC_SITE_URL`      | Overrides the canonical origin used by metadata, `robots.txt` and `sitemap.xml`. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | When set, `/contact` shows a `mailto:` link. When empty, nothing is shown. |
 
 Both are inlined at build time, so changing either one requires a new deployment.
@@ -52,11 +52,14 @@ Both are inlined at build time, so changing either one requires a new deployment
 The canonical origin is resolved in this order:
 
 1. `NEXT_PUBLIC_SITE_URL`, when it is a usable absolute URL.
-2. `VERCEL_PROJECT_PRODUCTION_URL`, injected by Vercel without any setup — the
-   shortest custom domain, or the `*.vercel.app` domain, and present on preview
-   deployments too.
-3. `https://devtinytools.vercel.app` in production, `http://localhost:3000` in
-   development.
+2. `PRODUCTION_SITE_URL` in `src/lib/site.ts` — the domain the site is actually
+   published on, currently `https://www.shoulin.shop`, for every non-development
+   build.
+3. `VERCEL_PROJECT_PRODUCTION_URL`, only if the pin above is removed. That
+   variable resolves to the *shortest* production domain, so it prefers the apex
+   `shoulin.shop` over `www.shoulin.shop` — which is why the domain is pinned in
+   code rather than left to Vercel.
+4. `http://localhost:3000` in development.
 
 A localhost value is ignored in a production build, so a misconfigured
 environment cannot publish localhost canonical URLs. `VERCEL_URL` is
@@ -133,7 +136,16 @@ git push -u origin main
 
 Then import the repository at <https://vercel.com/new> and deploy. No other
 configuration is required: every page is static, and the canonical origin comes
-from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel fills in automatically. Set
-`NEXT_PUBLIC_SITE_URL` only if you want to pin a specific origin, and
-`NEXT_PUBLIC_CONTACT_EMAIL` (or `CONTACT_EMAIL_FALLBACK` in `src/lib/site.ts`)
-once you have a public contact address to publish.
+from `PRODUCTION_SITE_URL` in `src/lib/site.ts`. Set `NEXT_PUBLIC_CONTACT_EMAIL`
+(or `CONTACT_EMAIL_FALLBACK` in the same file) once you have a public contact
+address to publish.
+
+### Custom domain
+
+1. Add both `shoulin.shop` and `www.shoulin.shop` to the Vercel project.
+2. Set `www.shoulin.shop` as the primary domain; Vercel then 301-redirects the
+   apex to it. Pick one host and stay on it — the other must redirect, never
+   serve the pages itself, or the two hosts compete for the same canonical.
+3. `PRODUCTION_SITE_URL` already points at `https://www.shoulin.shop`, so
+   canonicals, Open Graph URLs, `robots.txt` and the sitemap follow the domain
+   automatically on the next deployment.
