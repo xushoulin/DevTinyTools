@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
+  CONTACT_EMAIL_FALLBACK,
   PRODUCTION_SITE_URL,
   getContactEmail,
   normalizeContactEmail,
@@ -49,9 +50,10 @@ describe("getContactEmail", () => {
     }
   });
 
-  it("returns null when nothing is configured", () => {
+  it("returns the address set in code when no env var is present", () => {
     delete process.env.NEXT_PUBLIC_CONTACT_EMAIL;
-    expect(getContactEmail()).toBeNull();
+    expect(getContactEmail()).toBe(CONTACT_EMAIL_FALLBACK);
+    expect(CONTACT_EMAIL_FALLBACK).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
   });
 
   it("returns the configured address", () => {
@@ -64,9 +66,9 @@ describe("getContactEmail", () => {
     expect(getContactEmail()).toBe("hello@devtinytools.com");
   });
 
-  it("returns null instead of a broken mailto for a rejected value", () => {
+  it("ignores a malformed env value instead of emitting a broken mailto", () => {
     process.env.NEXT_PUBLIC_CONTACT_EMAIL = "hello@devtinytools.com：";
-    expect(getContactEmail()).toBeNull();
+    expect(getContactEmail()).toBe(CONTACT_EMAIL_FALLBACK);
   });
 });
 

@@ -34,7 +34,7 @@ export const PRODUCTION_SITE_URL = "https://www.shoulin.shop";
  * 2. Edit `CONTACT_EMAIL_FALLBACK` below and push — Vercel redeploys on push,
  *    so no dashboard access is needed.
  */
-const CONTACT_EMAIL_FALLBACK: string | null = null;
+export const CONTACT_EMAIL_FALLBACK: string | null = "xushoulin1234@gmail.com";
 
 /** Reject obviously broken values so a stray "：" or space cannot leak into a mailto link. */
 export function normalizeContactEmail(
