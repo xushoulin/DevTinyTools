@@ -40,25 +40,33 @@ npm run check      # lint + typecheck + test + build
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` and adjust:
+Both variables are optional. A Vercel deployment needs no configuration at all.
 
 | Variable                    | Purpose                                                                 |
 | --------------------------- | ----------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`      | Canonical origin used by metadata, `robots.txt` and `sitemap.xml`.      |
+| `NEXT_PUBLIC_SITE_URL`      | Forces the canonical origin used by metadata, `robots.txt` and `sitemap.xml`. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | When set, `/contact` shows a `mailto:` link. When empty, nothing is shown. |
 
 Both are inlined at build time, so changing either one requires a new deployment.
+
+The canonical origin is resolved in this order:
+
+1. `NEXT_PUBLIC_SITE_URL`, when it is a usable absolute URL.
+2. `VERCEL_PROJECT_PRODUCTION_URL`, injected by Vercel without any setup — the
+   shortest custom domain, or the `*.vercel.app` domain, and present on preview
+   deployments too.
+3. `https://devtinytools.vercel.app` in production, `http://localhost:3000` in
+   development.
+
+A localhost value is ignored in a production build, so a misconfigured
+environment cannot publish localhost canonical URLs. `VERCEL_URL` is
+deliberately not used, because it changes on every deployment.
 
 The contact address can also be set in code instead of the dashboard: edit
 `CONTACT_EMAIL_FALLBACK` in `src/lib/site.ts` and push. Values that do not look
 like an email address are ignored rather than rendered into a broken `mailto:`
 link, which is why a stray full-width colon or trailing space in the dashboard
 field silently results in "no address published yet".
-
-Defaults: `http://localhost:3000` in development and
-`https://devtinytools.vercel.app` in production. A localhost value is ignored in
-a production build so a misconfigured environment cannot publish localhost
-canonical URLs.
 
 ## Project structure
 
@@ -107,11 +115,6 @@ the geometry:
 node scripts/generate-icons.mjs
 ```
 
-## Known leftovers
-
-`public/*.svg` are unused files from the initial `create-next-app` template and
-can be deleted.
-
 ## Deploy
 
 ```bash
@@ -123,7 +126,9 @@ git remote add origin git@github.com:<user>/<repo>.git
 git push -u origin main
 ```
 
-Then import the repository at <https://vercel.com/new>, add
-`NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_CONTACT_EMAIL` under Project → Settings →
-Environment Variables, and deploy. No other configuration is required: every
-page is static.
+Then import the repository at <https://vercel.com/new> and deploy. No other
+configuration is required: every page is static, and the canonical origin comes
+from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel fills in automatically. Set
+`NEXT_PUBLIC_SITE_URL` only if you want to pin a specific origin, and
+`NEXT_PUBLIC_CONTACT_EMAIL` (or `CONTACT_EMAIL_FALLBACK` in `src/lib/site.ts`)
+once you have a public contact address to publish.

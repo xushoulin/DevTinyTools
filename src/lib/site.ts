@@ -10,9 +10,9 @@ export const SITE_DESCRIPTION =
   "Small, fast developer tools that run entirely in your browser. Format, validate and minify JSON without uploading your data.";
 
 /**
- * Used when NEXT_PUBLIC_SITE_URL is missing, so production builds never emit a
- * localhost canonical URL. Replace with the real domain in Vercel project
- * settings once a custom domain is attached.
+ * Used when neither NEXT_PUBLIC_SITE_URL nor the Vercel-provided production
+ * domain is available, so production builds never emit a localhost canonical
+ * URL. Replace with the real domain once a custom domain is attached.
  */
 export const FALLBACK_SITE_URL = "https://devtinytools.vercel.app";
 
@@ -97,15 +97,55 @@ function isLocalHost(url: string): boolean {
  *   localhost canonical tags.
  * - Falls back to the Vercel domain, then to a local dev URL.
  */
-export function resolveSiteUrl(): string {
-  const configured = normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL);
-  const isProduction = process.env.NODE_ENV === "production";
+/**
+ * Vercel injects the project's production domain at build time, without any
+ * manual configuration. It is the shortest custom domain, or the
+ * `*.vercel.app` domain when no custom domain exists, and it is present on
+ * preview deployments too — exactly what a canonical URL should point at.
+ * The value never includes the protocol, so it is normalised here.
+ */
+function vercelProductionUrl(
+  env: Record<string, string | undefined>,
+): string | null {
+  const raw =
+    env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ??
+    env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (!raw) return null;
 
-  if (configured) {
-    if (isProduction && isLocalHost(configured)) {
-      return FALLBACK_SITE_URL;
-    }
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  const withScheme = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+
+  return normalizeUrl(withScheme);
+}
+
+/**
+ * Resolve the canonical origin for the site.
+ *
+ * Priority:
+ * 1. `NEXT_PUBLIC_SITE_URL` — the explicit override, use this for a custom domain.
+ * 2. `VERCEL_PROJECT_PRODUCTION_URL` — supplied by Vercel automatically.
+ * 3. `FALLBACK_SITE_URL` in production, `http://localhost:3000` in development.
+ *
+ * A localhost value is ignored in production, so a misconfigured environment
+ * can never publish localhost canonical tags.
+ */
+export function resolveSiteUrl(
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const isProduction = env.NODE_ENV === "production";
+
+  const configured = normalizeUrl(env.NEXT_PUBLIC_SITE_URL);
+  if (configured && !(isProduction && isLocalHost(configured))) {
     return configured;
+  }
+
+  const fromVercel = vercelProductionUrl(env);
+  if (fromVercel && !isLocalHost(fromVercel)) {
+    return fromVercel;
   }
 
   return isProduction ? FALLBACK_SITE_URL : "http://localhost:3000";
