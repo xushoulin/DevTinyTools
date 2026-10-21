@@ -40,6 +40,10 @@ const FAQ = [
       "The position comes from your browser's JSON parser, which is accurate about where parsing stopped. The message wording differs between engines, and parsers only report the first problem they encounter. Use the location to find the problem area, then read the surrounding lines yourself.",
   },
   {
+    question: "Why does a message sometimes come with no line number?",
+    answer: `Some V8 messages only echo the document back, for example Unexpected token ']', "[1,2,]" is not valid JSON. That is not a display problem — the engine genuinely reported no position. When that happens this page runs its own strict scan of the document and shows the first offset where parsing cannot continue, labelled approximate so you know where the number came from.`,
+  },
+  {
     question: "What do the structure numbers mean?",
     answer:
       "“Values parsed” counts every node in the document, including primitives. “Object keys” counts members across all objects, “array items” counts entries across all arrays, and “nesting depth” is the deepest level reached, where the root counts as level 1.",
@@ -53,6 +57,44 @@ const FAQ = [
     question: "Is the document uploaded anywhere?",
     answer:
       "No. Validation happens in this browser tab. Nothing is sent to a server, and the input is not stored in a cookie, localStorage or analytics event.",
+  },
+];
+
+const ENGINE_MESSAGES = [
+  {
+    input: `{"a":1,}`,
+    message: `Expected double-quoted property name in JSON at position 7 (line 1 column 8)`,
+    note: "Trailing comma. After the comma the parser still expects another member.",
+  },
+  {
+    input: `[1,2,]`,
+    message: `Unexpected token ']', "[1,2,]" is not valid JSON`,
+    note: "The same mistake in an array — and this time no position is reported at all.",
+  },
+  {
+    input: `{a:1}`,
+    message: `Expected property name or '}' in JSON at position 1 (line 1 column 2)`,
+    note: "Unquoted key. A single-quoted key produces exactly the same message.",
+  },
+  {
+    input: `{"a":1 // note}`,
+    message: `Expected ',' or '}' after property value in JSON at position 7 (line 1 column 8)`,
+    note: "The comment is seen as unexpected characters after a complete value.",
+  },
+  {
+    input: `{"a":1`,
+    message: `Expected ',' or '}' after property value in JSON at position 6 (line 1 column 7)`,
+    note: "Reported at the last character, but the missing brace is the real problem.",
+  },
+  {
+    input: `{"a":1}{"b":2}`,
+    message: `Unexpected non-whitespace character after JSON at position 7 (line 1 column 8)`,
+    note: "Two top-level values. A JSON document holds exactly one.",
+  },
+  {
+    input: `{"a":NaN}`,
+    message: `Unexpected token 'N', "{"a":NaN}" is not valid JSON`,
+    note: "NaN is a JavaScript value, not a JSON one.",
   },
 ];
 
@@ -154,6 +196,61 @@ export default function JsonValidatorPage() {
                 </>,
               ]}
             />
+          </ContentSection>
+
+          <ContentSection id="engine-messages" title="What the parser actually says">
+            <p>
+              These are the messages Node.js 22 (V8) produced for each input below. They were
+              captured by running the snippets, not paraphrased. Chrome uses the same engine,
+              so you will usually see this exact wording; Firefox and Safari phrase things
+              differently but stop at the same character.
+            </p>
+            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+              <table className="w-full min-w-[680px] border-collapse text-left text-[13px]">
+                <caption className="sr-only">
+                  Real V8 parser messages for common JSON mistakes
+                </caption>
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
+                    <th scope="col" className="px-3 py-2 font-semibold">
+                      Input
+                    </th>
+                    <th scope="col" className="px-3 py-2 font-semibold">
+                      Message
+                    </th>
+                    <th scope="col" className="px-3 py-2 font-semibold">
+                      What it means
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 align-top">
+                  {ENGINE_MESSAGES.map((row) => (
+                    <tr key={row.input}>
+                      <td className="px-3 py-2.5 font-mono text-[12px] whitespace-nowrap text-slate-800">
+                        {row.input}
+                      </td>
+                      <td className="px-3 py-2.5 font-mono text-[11px] leading-relaxed break-words text-slate-700">
+                        {row.message}
+                      </td>
+                      <td className="px-3 py-2.5 text-slate-600">{row.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Look at the second row: the engine reported no position at all, it only echoed
+              the document back. That single detail explains a design choice on this page —
+              when the message carries no location, a strict scanner re-reads the document
+              with the same grammar rules and reports the first offset where it cannot
+              continue. Locations found that way are labelled{" "}
+              <strong className="font-medium text-slate-900">approximate</strong>, because at
+              the exact boundary character two different readings can both be defensible.
+            </p>
+            <p className="text-xs text-slate-500">
+              Captured on 21 October 2026 with Node 22.22.2. Messages are not part of any
+              specification, so they can change when an engine is updated.
+            </p>
           </ContentSection>
 
           <ContentSection id="reading-errors" title="Reading a parser error">

@@ -27,7 +27,12 @@ const FAQ = [
   {
     question: "Does formatting change my data?",
     answer:
-      "Formatting only changes whitespace. The document is parsed and then re-serialized, so keys, values, ordering and nesting stay the same. Two exceptions are worth knowing: numbers are re-printed in JavaScript form (1.0 becomes 1, 1e3 becomes 1000), and integers larger than 2^53 can lose precision because JSON.parse stores them as doubles.",
+      "Whitespace is the only thing formatting is meant to change, and keys, values and nesting are preserved. Four engine-level differences are worth knowing, all covered below: integers above 2^53 lose precision, keys that look like array indices are reordered ascending, duplicate keys collapse to the last value, and numbers are re-printed in their shortest form (1.0 becomes 1).",
+  },
+  {
+    question: "Why did my 64-bit ID come back with a different last digit?",
+    answer:
+      "JSON has one number type, and JavaScript implements it as an IEEE-754 double, which holds 53 bits of integer precision exactly. A snowflake or database id such as 9007199254740993 is stored as 9007199254740992. Send such ids as strings, or format with a tool that keeps the number text instead of parsing it.",
   },
   {
     question: "Why does valid-looking JSON get rejected?",
@@ -53,6 +58,34 @@ const FAQ = [
     question: "Is there an API?",
     answer:
       "No. This is a browser tool only. There is no public endpoint, and deliberately so: adding one would mean your JSON leaves your machine.",
+  },
+];
+
+const ROUND_TRIP = [
+  {
+    input: '{"id":9007199254740993}',
+    output: '{"id": 9007199254740992}',
+    why: "Numbers become IEEE-754 doubles. Integers above 2^53 lose their last digits.",
+  },
+  {
+    input: '{"b":1,"2":2,"1":3}',
+    output: '{"1": 3, "2": 2, "b": 1}',
+    why: "Keys that look like array indices are enumerated first, ascending. That is a JavaScript object rule, not a JSON one.",
+  },
+  {
+    input: '{"a":1,"a":2}',
+    output: '{"a": 2}',
+    why: "Duplicate member names collapse silently: the last value wins and the others are gone.",
+  },
+  {
+    input: '{"x":1.0,"y":1e3,"z":-0}',
+    output: '{"x": 1, "y": 1000, "z": 0}',
+    why: "Numbers are re-printed in their shortest round-trippable form.",
+  },
+  {
+    input: '"\\u00e9\\/"',
+    output: '"é/"',
+    why: "Escapes are decoded, then only the ones that must be escaped are written back.",
   },
 ];
 
@@ -153,6 +186,64 @@ export default function JsonFormatterPage() {
                 </>,
               ]}
             />
+          </ContentSection>
+
+          <ContentSection id="round-trip" title="What changes besides whitespace">
+            <p>
+              Formatting works by parsing your text into a JavaScript value and serializing
+              it again. That round trip is what makes the output consistent, and it is also
+              why the bytes that come back are occasionally not the bytes you pasted. Every
+              difference below comes from the engine rather than from this tool — any
+              formatter built on <code className="font-mono text-[12px]">JSON.parse</code>{" "}
+              behaves the same way.
+            </p>
+            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+              <table className="w-full min-w-[640px] border-collapse text-left text-[13px]">
+                <caption className="sr-only">
+                  Round-trip differences between pasted JSON and a JavaScript parser&apos;s
+                  output
+                </caption>
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
+                    <th scope="col" className="px-3 py-2 font-semibold">
+                      You paste
+                    </th>
+                    <th scope="col" className="px-3 py-2 font-semibold">
+                      You get back
+                    </th>
+                    <th scope="col" className="px-3 py-2 font-semibold">
+                      Why
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 align-top">
+                  {ROUND_TRIP.map((row) => (
+                    <tr key={row.input}>
+                      <td className="px-3 py-2.5 font-mono text-[12px] text-slate-800">
+                        {row.input}
+                      </td>
+                      <td className="px-3 py-2.5 font-mono text-[12px] text-slate-800">
+                        {row.output}
+                      </td>
+                      <td className="px-3 py-2.5 text-slate-600">{row.why}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Two of these bite in production. The first is precision: any id, nanosecond
+              timestamp or hash sent as a bare number above 9,007,199,254,740,991 can come
+              back changed. The fix is to send such values as strings in the source document
+              — <code className="font-mono text-[12px]">{'{"id":"9007199254740993"}'}</code>{" "}
+              — which is exactly why payment and social APIs return their ids as strings.
+            </p>
+            <p>
+              The second is key order. If anything downstream depends on member order — some
+              signing schemes and diff-based caches do — an object whose keys are all numeric
+              strings will be reordered on re-serialization. Either sort explicitly on both
+              sides, or stop using purely numeric keys.
+            </p>
           </ContentSection>
 
           <ContentSection id="common-errors" title="Common JSON syntax errors">
