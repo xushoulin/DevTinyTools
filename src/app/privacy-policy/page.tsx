@@ -1,22 +1,26 @@
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ADSENSE_SCRIPT_ENABLED } from "@/lib/ads";
+import { ANALYTICS_ENABLED, GA_MEASUREMENT_ID } from "@/lib/analytics";
 import { pageMetadata } from "@/lib/metadata";
 import { PRIVACY_LAST_UPDATED, SITE_NAME } from "@/lib/site";
 
 /**
- * The advertising wording below is driven by the same constant that emits the
- * AdSense <script> tag, so this page cannot claim "no advertising code" while
- * the loader is present in the HTML — and cannot describe live ads before they
- * exist.
+ * The advertising and analytics wording below is driven by the same constants
+ * that emit the AdSense and gtag.js <script> tags, so this page cannot claim
+ * "no advertising code" or "no analytics" while those loaders are present in
+ * the HTML — and cannot describe live tracking before it exists.
  */
 const ADSENSE_ACTIVE = ADSENSE_SCRIPT_ENABLED;
+const ANALYTICS_ACTIVE = ANALYTICS_ENABLED;
 
 export const metadata = pageMetadata({
   title: "Privacy Policy",
-  description: ADSENSE_ACTIVE
-    ? "How DevTinyTools handles data: JSON is processed locally in your browser, and the only third-party script on the site is the Google AdSense loader."
-    : "How DevTinyTools handles data: JSON is processed locally in your browser, and the site does not use analytics, advertising cookies or accounts.",
+  description: ANALYTICS_ACTIVE
+    ? "How DevTinyTools handles data: JSON is processed locally in your browser, and the only third-party scripts are Google AdSense and Google Analytics."
+    : ADSENSE_ACTIVE
+      ? "How DevTinyTools handles data: JSON is processed locally in your browser, and the only third-party script on the site is the Google AdSense loader."
+      : "How DevTinyTools handles data: JSON is processed locally in your browser, and the site does not use analytics, advertising cookies or accounts.",
   path: "/privacy-policy",
 });
 
@@ -51,14 +55,20 @@ export default function PrivacyPolicyPage() {
           <li>There are no accounts, no profiles and no user database.</li>
           <li>
             This site sets no cookies of its own and writes nothing to localStorage.
-            {ADSENSE_ACTIVE
-              ? " Google AdSense is loaded to verify the site, and Google may set its own cookies — see section 4."
-              : ""}
+            {ANALYTICS_ACTIVE && ADSENSE_ACTIVE
+              ? " Google AdSense and Google Analytics are both loaded, and each may set its own cookies — see section 4."
+              : ANALYTICS_ACTIVE
+                ? " Google Analytics is loaded and may set its own cookies — see section 4."
+                : ADSENSE_ACTIVE
+                  ? " Google AdSense is loaded to verify the site, and Google may set its own cookies — see section 4."
+                  : ""}
           </li>
           <li>
-            {ADSENSE_ACTIVE
-              ? "No analytics service is installed. The only third-party script is the Google AdSense loader; no ad unit is displayed yet."
-              : "No analytics and no advertising code are currently active. If that changes, this policy will be updated before the change goes live."}
+            {ANALYTICS_ACTIVE
+              ? "Google Analytics 4 records aggregate page views and referrers so the tools can be improved. It never receives anything you paste into a tool, and no ad unit is displayed yet."
+              : ADSENSE_ACTIVE
+                ? "No analytics service is installed. The only third-party script is the Google AdSense loader; no ad unit is displayed yet."
+                : "No analytics and no advertising code are currently active. If that changes, this policy will be updated before the change goes live."}
           </li>
         </ul>
       </div>
@@ -106,41 +116,104 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-lg font-semibold text-slate-900">
             4. Cookies and local storage
           </h2>
+          <p className="mt-2">
+            This site&apos;s own code sets no cookies and writes nothing to
+            localStorage or sessionStorage — your editor contents are never stored.
+          </p>
           {ADSENSE_ACTIVE ? (
+            <p className="mt-2">
+              One third-party script is loaded for advertising: the Google AdSense loader.
+              Through it, Google may set or read cookies in your browser and receive technical
+              data such as your IP address and user agent, which it uses for ad delivery,
+              frequency capping, fraud prevention and measurement. Those cookies belong to
+              Google, not to this site, and are covered by Google&apos;s own policies. No
+              personalised advertising is served in regions that require prior consent; that
+              choice is handled by Google&apos;s consent management tools in AdSense.
+            </p>
+          ) : null}
+          {ANALYTICS_ACTIVE ? (
             <>
               <p className="mt-2">
-                This site&apos;s own code sets no cookies and writes nothing to
-                localStorage or sessionStorage — your editor contents are never stored.
+                A second third-party script is loaded for measurement: Google Analytics 4.
+                Outside the EEA, the United Kingdom and Switzerland it stores a persistent
+                client identifier in the first-party cookies <code>_ga</code> and{" "}
+                <code>_ga_&lt;container&gt;</code> so repeat visits can be told apart. Those
+                cookies are set on this domain on Google&apos;s behalf and expire after about
+                two years.
               </p>
               <p className="mt-2">
-                One third-party script is loaded: the Google AdSense loader. Through it,
-                Google may set or read cookies in your browser and receive technical data
-                such as your IP address and user agent, which it uses for ad delivery,
-                frequency capping, fraud prevention and measurement. Those cookies belong to
-                Google, not to this site, and are covered by Google&apos;s own policies. No
-                personalised advertising is served in regions that require prior consent;
-                that choice is handled by Google&apos;s consent management tools in AdSense.
+                Inside the EEA, the United Kingdom and Switzerland, Consent Mode sets analytics
+                storage to &quot;denied&quot; by default. In those regions the tag sends
+                cookieless pings — no <code>_ga</code> cookie is written and no identifier is
+                stored on your device until consent is granted.
               </p>
             </>
-          ) : (
+          ) : null}
+          {!ADSENSE_ACTIVE && !ANALYTICS_ACTIVE ? (
             <p className="mt-2">
-              This site does not set cookies and does not write to localStorage or
-              sessionStorage. No consent banner is shown because there is currently nothing
-              to consent to. If cookies are introduced later — for example with an
-              advertising partner — this section will be rewritten and a consent mechanism
-              added where required by law.
+              No consent banner is shown because there is currently nothing to consent to. If
+              cookies are introduced later — for example with an advertising partner or an
+              analytics service — this section will be rewritten and a consent mechanism added
+              where required by law.
             </p>
-          )}
+          ) : null}
         </section>
 
         <section id="analytics">
           <h2 className="text-lg font-semibold text-slate-900">5. Analytics</h2>
-          <p className="mt-2">
-            No analytics or session-recording service is installed. The site does not use
-            Google Analytics, Plausible, or any comparable product today. Should analytics be
-            added, this policy will list the provider, what it measures and how to opt out
-            before it is enabled.
-          </p>
+          {GA_MEASUREMENT_ID ? (
+            <>
+              <p className="mt-2">
+                This site uses Google Analytics 4, measurement id{" "}
+                <code className="rounded bg-slate-100 px-1 py-0.5 text-[12px]">
+                  {GA_MEASUREMENT_ID}
+                </code>
+                . It records aggregate usage: the page path you visited, the referring site,
+                an approximate location derived from your IP address (IP anonymisation is
+                enabled), your browser and device type, and basic interaction events such as
+                which tool you opened.
+              </p>
+              <p className="mt-2">
+                It does not record what you type or paste into a tool. The editors never send
+                their contents anywhere, so no analytics event can carry them.
+              </p>
+              <p className="mt-2">
+                Advertising features are switched off for this tag: Google Signals and ad
+                personalisation signals are both disabled, so Analytics data is not joined to
+                advertising profiles. Event data ages out automatically according to the
+                retention period configured on the property.
+              </p>
+              <p className="mt-2">
+                To opt out, install the{" "}
+                <a
+                  href="https://tools.google.com/dlpage/gaoptout"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="text-blue-700 underline underline-offset-2"
+                >
+                  Google Analytics Opt-out Browser Add-on
+                </a>
+                , block <code>googletagmanager.com</code> with an extension, or browse in a
+                private window. Google&apos;s handling is described in the{" "}
+                <a
+                  href="https://policies.google.com/privacy"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="text-blue-700 underline underline-offset-2"
+                >
+                  Google Privacy Policy
+                </a>
+                .
+              </p>
+            </>
+          ) : (
+            <p className="mt-2">
+              No analytics or session-recording service is installed. The site does not use
+              Google Analytics, Plausible, or any comparable product today. Should analytics be
+              added, this policy will list the provider, what it measures and how to opt out
+              before it is enabled.
+            </p>
+          )}
         </section>
 
         <section id="ads">

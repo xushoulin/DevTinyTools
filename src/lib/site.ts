@@ -181,4 +181,4 @@ export function absoluteUrl(path = "/"): string {
   return `${SITE_URL}${suffix === "/" ? "" : suffix}` || SITE_URL;
 }
 
-export const PRIVACY_LAST_UPDATED = "October 21, 2026";
+export const PRIVACY_LAST_UPDATED = "October 22, 2026";

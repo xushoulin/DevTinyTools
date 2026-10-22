@@ -33,21 +33,22 @@ npm install        # install dependencies
 npm run dev        # dev server on http://localhost:3000
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run test       # Vitest (40 unit tests)
+npm run test       # Vitest (83 unit tests)
 npm run build      # production build
 npm run check      # lint + typecheck + test + build
 ```
 
 ## Environment variables
 
-Both variables are optional. A Vercel deployment needs no configuration at all.
+All three variables are optional. A Vercel deployment needs no configuration at all.
 
-| Variable                    | Purpose                                                                 |
-| --------------------------- | ----------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`      | Overrides the canonical origin used by metadata, `robots.txt` and `sitemap.xml`. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | When set, `/contact` shows a `mailto:` link. When empty, nothing is shown. |
+| Variable                       | Purpose                                                                 |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`         | Overrides the canonical origin used by metadata, `robots.txt` and `sitemap.xml`. |
+| `NEXT_PUBLIC_CONTACT_EMAIL`    | When set, `/contact` shows a `mailto:` link. When empty, nothing is shown. |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID`| GA4 web-stream id (`G-XXXXXXXXXX`). When empty, no analytics is emitted at all. |
 
-Both are inlined at build time, so changing either one requires a new deployment.
+All three are inlined at build time, so changing any of them requires a new deployment.
 
 The canonical origin is resolved in this order:
 
@@ -85,6 +86,7 @@ src/
     site.ts                site config and URL resolution
     tools.ts               tool registry (nav, cards, sitemap)
     ads.ts                 AdSense loader + ads.txt configuration
+    analytics.ts           GA4 tag, Consent Mode defaults and id validation
     clipboard.ts           clipboard helper with fallback
     download.ts            blob download + safe filenames
 public/
@@ -127,6 +129,36 @@ reverts the policy to its "no advertising code" wording.
 In the AdSense dashboard, enable Google's consent management (Privacy & messaging
 → GDPR / EEA) before ads are served to visitors in the EEA, the UK or
 Switzerland.
+
+## Analytics
+
+`src/lib/analytics.ts` is a single switch, built the same way as `ads.ts`.
+
+While `GA_MEASUREMENT_ID_FALLBACK` is `null` and
+`NEXT_PUBLIC_GA_MEASUREMENT_ID` is empty, nothing is emitted: no
+`googletagmanager.com` request, no cookie, and the privacy policy keeps its
+"no analytics" wording. Set either one to the id from
+analytics.google.com → Admin → Data streams → the web stream ("Measurement ID",
+top right) to turn it on.
+
+What the bootstrap does, in order:
+
+1. `Consent Mode v2` defaults, scoped to the EEA, the UK and Switzerland:
+   `ad_storage`, `ad_user_data`, `ad_personalization` and `analytics_storage`
+   are all `denied`.
+2. A second, unscoped default that grants the same four for the rest of the
+   world — the site's main audience — so no consent banner is needed outside
+   those regions.
+3. `gtag('config', …)` with `anonymize_ip`, `allow_google_signals: false` and
+   `allow_ad_personalization_signals: false`.
+
+Inside the consent region, analytics runs in cookieless mode: pings are sent but
+no `_ga` cookie is written and no identifier is stored, until a consent tool
+grants storage.
+
+Ids are validated before use — `UA-…`, `GTM-…`, a bare hostname, a full URL or
+a value with a full-width colon pasted from a chat message is rejected rather
+than rendered into a script that 404s.
 
 ## Icons
 

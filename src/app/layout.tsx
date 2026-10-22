@@ -2,6 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ADSENSE_CLIENT, ADSENSE_SCRIPT_ENABLED } from "@/lib/ads";
+import {
+  GA_MEASUREMENT_ID,
+  gaBootstrapScript,
+  gtagScriptUrl,
+} from "@/lib/analytics";
 import { OG_IMAGE } from "@/lib/metadata";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -66,6 +71,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
             crossOrigin="anonymous"
           />
+        ) : null}
+        {/*
+          Google Analytics 4. Emitted only when a measurement id is configured;
+          `gaBootstrapScript` pushes the Consent Mode defaults before the tag is
+          configured, so EEA/UK/CH visitors get cookieless pings until consent
+          is granted. With no id set, nothing is requested and no cookie is set.
+        */}
+        {GA_MEASUREMENT_ID ? (
+          <>
+            <script async src={gtagScriptUrl(GA_MEASUREMENT_ID)} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: gaBootstrapScript(GA_MEASUREMENT_ID),
+              }}
+            />
+          </>
         ) : null}
       </head>
       <body className="flex min-h-full flex-col">
