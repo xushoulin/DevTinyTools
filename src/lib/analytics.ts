@@ -22,11 +22,10 @@
 const MEASUREMENT_ID_PATTERN = /^G-[A-Z0-9]{4,20}$/;
 
 /**
- * Paste the id from analytics.google.com → Admin → Data streams → the web
- * stream → "Measurement ID" (top right). Left null on purpose: an invalid id
- * would emit a script that 404s and pollutes the console.
+ * The GA4 web stream for www.shoulin.shop. Left in code so enabling analytics
+ * needs no dashboard access; `NEXT_PUBLIC_GA_MEASUREMENT_ID` overrides it.
  */
-export const GA_MEASUREMENT_ID_FALLBACK: string | null = null;
+export const GA_MEASUREMENT_ID_FALLBACK: string | null = "G-9J5YQKRS5V";
 
 /**
  * Accepts only a real GA4 measurement id. Trims whitespace and uppercases, so
