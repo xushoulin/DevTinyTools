@@ -5,12 +5,16 @@ never uploaded, and there is no backend, database or account system.
 
 Current tools:
 
-| Route             | Tool                        |
+| Route             | Page                        |
 | ----------------- | --------------------------- |
 | `/`               | Home + tool directory       |
 | `/json-formatter` | JSON Formatter & Validator  |
 | `/json-validator` | JSON Validator              |
 | `/json-minifier`  | JSON Minifier               |
+| `/guides`         | Guide index                 |
+| `/guides/json-error-messages-explained` | Parser errors, decoded |
+| `/guides/why-json-numbers-lose-precision` | Number precision |
+| `/guides/json-minify-vs-gzip` | Minify vs gzip / brotli |
 | `/about`          | About the site              |
 | `/contact`        | Contact information         |
 | `/privacy-policy` | Privacy policy              |
@@ -33,7 +37,7 @@ npm install        # install dependencies
 npm run dev        # dev server on http://localhost:3000
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run test       # Vitest (83 unit tests)
+npm run test       # Vitest (97 unit tests)
 npm run build      # production build
 npm run check      # lint + typecheck + test + build
 ```
@@ -85,6 +89,8 @@ src/
     examples.ts            sample documents
     site.ts                site config and URL resolution
     tools.ts               tool registry (nav, cards, sitemap)
+    guides.ts              guide registry (nav, cards, sitemap)
+    json-references.ts     measured parser messages, round-trip cases, sizes
     ads.ts                 AdSense loader + ads.txt configuration
     analytics.ts           GA4 tag, Consent Mode defaults and id validation
     clipboard.ts           clipboard helper with fallback
@@ -102,6 +108,25 @@ public/
 - Input is not written to the URL, `localStorage`, `sessionStorage` or cookies.
 - Nothing is logged to the console.
 - Downloads use fixed, sanitised filenames — never the document content.
+
+## Guides
+
+`src/lib/guides.ts` is the registry: nav, the `/guides` index, the sitemap, the
+homepage cards and the "more guides" list all read from it, so a guide cannot
+exist as a page while being invisible everywhere else.
+
+Each guide is a hand-written page under `src/app/guides/<slug>/page.tsx` — a
+catch-all route would only add a lookup layer on top of three files. They share
+`src/components/guide-shell.tsx`, which renders the breadcrumbs, title block,
+the closing tool call-to-action, the other guides, and the `Article` structured
+data. A guide therefore cannot ship without its JSON-LD.
+
+Numeric claims in a guide must come from `src/lib/json-references.ts`, which the
+tool pages read as well. One measured table, two readers: the guide and the tool
+page cannot drift apart.
+
+Slugs, hrefs, description length, publishing dates and the `relatedTool` link
+are all asserted in `src/lib/guides.test.ts`.
 
 ## Advertising
 

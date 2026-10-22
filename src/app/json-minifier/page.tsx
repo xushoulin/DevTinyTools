@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/json-ld";
 import { RelatedTools } from "@/components/related-tools";
 import { ToolPageHeader } from "@/components/tool-page-header";
 import { JsonMinifierTool } from "@/components/tools/json-minifier-tool";
+import { SIZE_MEASUREMENTS } from "@/lib/json-references";
 import { pageMetadata } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/site";
 
@@ -58,23 +59,6 @@ const FAQ = [
     question: "Is the JSON uploaded while minifying?",
     answer:
       "No. The text is parsed and re-serialized locally with the browser's own JSON functions. No request is made, and nothing is written to storage or analytics.",
-  },
-];
-
-const SIZE_MEASUREMENTS = [
-  { form: "Indented, 2 spaces", size: "221,421 B", note: "216.2 KB — the baseline" },
-  { form: "Minified", size: "124,588 B", note: "43.7% smaller than the indented file" },
-  { form: "Indented, gzip -9", size: "10,879 B", note: "10.6 KB" },
-  {
-    form: "Minified, gzip -9",
-    size: "9,700 B",
-    note: "only 10.8% smaller than gzipping the indented file",
-  },
-  { form: "Indented, brotli", size: "5,038 B", note: "4.9 KB" },
-  {
-    form: "Minified, brotli",
-    size: "4,791 B",
-    note: "only 4.9% smaller than brotli-compressing the indented file",
   },
 ];
 
@@ -272,6 +256,17 @@ export default function JsonMinifierPage() {
               A JWS signature, a webhook HMAC, an ETag or a content-addressed identifier all
               cover the exact bytes of the document. Remove a single space and verification
               fails, with no hint about why. Serialize first, then sign.
+            </p>
+            <p>
+              The full breakdown, including how brotli compares with minification and how to
+              check whether your own responses are compressed at all, is in{" "}
+              <Link
+                href="/guides/json-minify-vs-gzip"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                the minify-versus-gzip guide
+              </Link>
+              .
             </p>
           </ContentSection>
 

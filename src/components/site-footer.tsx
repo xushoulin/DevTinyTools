@@ -3,6 +3,7 @@ import { TOOLS } from "@/lib/tools";
 import { SITE_NAME } from "@/lib/site";
 
 const SITE_LINKS = [
+  { href: "/guides", label: "Guides" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/privacy-policy", label: "Privacy Policy" },

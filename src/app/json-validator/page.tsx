@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/json-ld";
 import { RelatedTools } from "@/components/related-tools";
 import { ToolPageHeader } from "@/components/tool-page-header";
 import { JsonValidatorTool } from "@/components/tools/json-validator-tool";
+import { ENGINE_MESSAGES } from "@/lib/json-references";
 import { pageMetadata } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/site";
 
@@ -57,44 +58,6 @@ const FAQ = [
     question: "Is the document uploaded anywhere?",
     answer:
       "No. Validation happens in this browser tab. Nothing is sent to a server, and the input is not stored in a cookie, localStorage or analytics event.",
-  },
-];
-
-const ENGINE_MESSAGES = [
-  {
-    input: `{"a":1,}`,
-    message: `Expected double-quoted property name in JSON at position 7 (line 1 column 8)`,
-    note: "Trailing comma. After the comma the parser still expects another member.",
-  },
-  {
-    input: `[1,2,]`,
-    message: `Unexpected token ']', "[1,2,]" is not valid JSON`,
-    note: "The same mistake in an array — and this time no position is reported at all.",
-  },
-  {
-    input: `{a:1}`,
-    message: `Expected property name or '}' in JSON at position 1 (line 1 column 2)`,
-    note: "Unquoted key. A single-quoted key produces exactly the same message.",
-  },
-  {
-    input: `{"a":1 // note}`,
-    message: `Expected ',' or '}' after property value in JSON at position 7 (line 1 column 8)`,
-    note: "The comment is seen as unexpected characters after a complete value.",
-  },
-  {
-    input: `{"a":1`,
-    message: `Expected ',' or '}' after property value in JSON at position 6 (line 1 column 7)`,
-    note: "Reported at the last character, but the missing brace is the real problem.",
-  },
-  {
-    input: `{"a":1}{"b":2}`,
-    message: `Unexpected non-whitespace character after JSON at position 7 (line 1 column 8)`,
-    note: "Two top-level values. A JSON document holds exactly one.",
-  },
-  {
-    input: `{"a":NaN}`,
-    message: `Unexpected token 'N', "{"a":NaN}" is not valid JSON`,
-    note: "NaN is a JavaScript value, not a JSON one.",
   },
 ];
 
@@ -270,6 +233,17 @@ export default function JsonValidatorPage() {
               Browsers do not agree on error wording, and the same document can produce
               different messages in Chrome, Firefox and Safari. The line and column shown
               here come from your browser and are best treated as a pointer.
+            </p>
+            <p>
+              If you want the long version — what each message means, why some carry no
+              position at all, and the nine causes behind almost every failure — read{" "}
+              <Link
+                href="/guides/json-error-messages-explained"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                JSON parse error messages, decoded
+              </Link>
+              .
             </p>
           </ContentSection>
 

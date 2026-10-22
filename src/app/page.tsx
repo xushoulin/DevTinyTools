@@ -3,6 +3,7 @@ import { AdSlot } from "@/components/ad-slot";
 import { JsonLd } from "@/components/json-ld";
 import { ToolCard } from "@/components/tool-card";
 import { buttonClass } from "@/components/ui/button";
+import { GUIDES } from "@/lib/guides";
 import { pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { PLANNED_TOOLS, TOOLS } from "@/lib/tools";
@@ -123,6 +124,48 @@ export default function HomePage() {
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {TOOLS.map((tool) => (
               <ToolCard key={tool.href} tool={tool} />
+            ))}
+          </div>
+        </section>
+
+        <section id="guides" aria-labelledby="guides-heading" className="mt-12 scroll-mt-20">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h2
+                id="guides-heading"
+                className="text-xl font-semibold tracking-tight text-slate-900"
+              >
+                Guides
+              </h2>
+              <p className="mt-1.5 max-w-2xl text-sm text-slate-600">
+                Short explanations of what JSON actually does, backed by output measured
+                in this project rather than copied from a specification.
+              </p>
+            </div>
+            <Link href="/guides" className="text-sm text-blue-700 underline underline-offset-2">
+              All guides
+            </Link>
+          </div>
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {GUIDES.map((guide) => (
+              <article
+                key={guide.slug}
+                className="flex flex-col rounded-lg border border-slate-200 bg-white p-4"
+              >
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-700">
+                  {guide.topic}
+                </p>
+                <h3 className="mt-1.5 text-sm font-semibold text-slate-900">
+                  <Link href={guide.href} className="hover:underline">
+                    {guide.title}
+                  </Link>
+                </h3>
+                <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-slate-600">
+                  {guide.summary}
+                </p>
+                <p className="mt-3 text-xs text-slate-500">{guide.readingMinutes} min read</p>
+              </article>
             ))}
           </div>
         </section>

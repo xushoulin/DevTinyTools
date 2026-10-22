@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { GUIDES } from "@/lib/guides";
 import { absoluteUrl } from "@/lib/site";
 import { TOOLS } from "@/lib/tools";
 
@@ -43,5 +44,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...tools, ...core];
+  const guides: MetadataRoute.Sitemap = GUIDES.map((guide) => ({
+    url: absoluteUrl(guide.href),
+    lastModified: new Date(guide.updatedAt ?? guide.publishedAt),
+    changeFrequency: "yearly",
+    priority: 0.7,
+  }));
+
+  const guidesIndex: MetadataRoute.Sitemap = [
+    {
+      url: absoluteUrl("/guides"),
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+  ];
+
+  return [...tools, ...guidesIndex, ...guides, ...core];
 }

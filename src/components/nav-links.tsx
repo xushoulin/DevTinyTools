@@ -8,11 +8,13 @@ const LINKS = [
   { href: "/json-formatter", label: "Formatter" },
   { href: "/json-validator", label: "Validator" },
   { href: "/json-minifier", label: "Minifier" },
+  { href: "/guides", label: "Guides" },
   { href: "/about", label: "About" },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
-  return pathname === href;
+  // A section stays highlighted on its child pages, e.g. /guides/<slug>.
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function DesktopNav() {

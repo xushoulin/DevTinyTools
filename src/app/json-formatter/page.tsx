@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/json-ld";
 import { RelatedTools } from "@/components/related-tools";
 import { ToolPageHeader } from "@/components/tool-page-header";
 import { JsonFormatterTool } from "@/components/tools/json-formatter-tool";
+import { ROUND_TRIP } from "@/lib/json-references";
 import { pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
@@ -58,34 +59,6 @@ const FAQ = [
     question: "Is there an API?",
     answer:
       "No. This is a browser tool only. There is no public endpoint, and deliberately so: adding one would mean your JSON leaves your machine.",
-  },
-];
-
-const ROUND_TRIP = [
-  {
-    input: '{"id":9007199254740993}',
-    output: '{"id": 9007199254740992}',
-    why: "Numbers become IEEE-754 doubles. Integers above 2^53 lose their last digits.",
-  },
-  {
-    input: '{"b":1,"2":2,"1":3}',
-    output: '{"1": 3, "2": 2, "b": 1}',
-    why: "Keys that look like array indices are enumerated first, ascending. That is a JavaScript object rule, not a JSON one.",
-  },
-  {
-    input: '{"a":1,"a":2}',
-    output: '{"a": 2}',
-    why: "Duplicate member names collapse silently: the last value wins and the others are gone.",
-  },
-  {
-    input: '{"x":1.0,"y":1e3,"z":-0}',
-    output: '{"x": 1, "y": 1000, "z": 0}',
-    why: "Numbers are re-printed in their shortest round-trippable form.",
-  },
-  {
-    input: '"\\u00e9\\/"',
-    output: '"é/"',
-    why: "Escapes are decoded, then only the ones that must be escaped are written back.",
   },
 ];
 
@@ -243,6 +216,17 @@ export default function JsonFormatterPage() {
               signing schemes and diff-based caches do — an object whose keys are all numeric
               strings will be reordered on re-serialization. Either sort explicitly on both
               sides, or stop using purely numeric keys.
+            </p>
+            <p>
+              The{" "}
+              <Link
+                href="/guides/why-json-numbers-lose-precision"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                guide to number precision
+              </Link>{" "}
+              walks through each case with the exact input and output, and covers how to keep
+              64-bit IDs intact instead of turning them into strings.
             </p>
           </ContentSection>
 
