@@ -8,8 +8,8 @@ const LINKS = [
   { href: "/json-formatter", label: "Formatter" },
   { href: "/json-validator", label: "Validator" },
   { href: "/json-minifier", label: "Minifier" },
+  { href: "/json-diff", label: "Diff" },
   { href: "/guides", label: "Guides" },
-  { href: "/about", label: "About" },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {

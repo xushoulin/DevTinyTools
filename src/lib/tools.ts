@@ -46,14 +46,19 @@ export const TOOLS: ToolDefinition[] = [
       "Minify JSON by removing all unnecessary whitespace. Compare character counts and byte sizes before and after, then copy or download the compact result.",
     category: "JSON",
   },
+  {
+    href: "/json-diff",
+    name: "JSON Diff",
+    heading: "JSON Diff Checker",
+    summary:
+      "Compare two documents and list every added, removed and changed value with its path.",
+    description:
+      "Compare two JSON documents and see every added, removed and changed value with its exact path. Optional key-order and array-order matching. Runs in your browser.",
+    category: "JSON",
+  },
 ];
 
 export const PLANNED_TOOLS = [
-  {
-    name: "JSON Diff Checker",
-    summary:
-      "Compare two JSON documents and highlight added, removed and changed values.",
-  },
   {
     name: "JSON to CSV",
     summary: "Turn an array of JSON objects into a CSV file you can open in a spreadsheet.",

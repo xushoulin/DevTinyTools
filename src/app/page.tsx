@@ -111,9 +111,9 @@ export default function HomePage() {
                 Tools
               </h2>
               <p className="mt-1.5 max-w-2xl text-sm text-slate-600">
-                Three JSON tools covering the tasks that come up most often: reading a
-                minified payload, checking why a document is rejected, and shrinking it
-                again before shipping.
+                Four JSON tools covering the tasks that come up most often: reading a
+                minified payload, checking why a document is rejected, shrinking it before
+                shipping, and seeing exactly what changed between two versions.
               </p>
             </div>
             <span className="rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-500">
@@ -121,7 +121,7 @@ export default function HomePage() {
             </span>
           </div>
 
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {TOOLS.map((tool) => (
               <ToolCard key={tool.href} tool={tool} />
             ))}

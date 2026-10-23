@@ -11,6 +11,7 @@ Current tools:
 | `/json-formatter` | JSON Formatter & Validator  |
 | `/json-validator` | JSON Validator              |
 | `/json-minifier`  | JSON Minifier               |
+| `/json-diff`      | JSON Diff Checker           |
 | `/guides`         | Guide index                 |
 | `/guides/json-error-messages-explained` | Parser errors, decoded |
 | `/guides/why-json-numbers-lose-precision` | Number precision |
@@ -37,7 +38,7 @@ npm install        # install dependencies
 npm run dev        # dev server on http://localhost:3000
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run test       # Vitest (97 unit tests)
+npm run test       # Vitest (133 unit tests)
 npm run build      # production build
 npm run check      # lint + typecheck + test + build
 ```
@@ -86,6 +87,7 @@ src/
     ui/                    small presentational primitives
   lib/
     json-utils.ts          parse / format / minify / analyse + error location
+    json-diff.ts           structural comparison with paths and order options
     examples.ts            sample documents
     site.ts                site config and URL resolution
     tools.ts               tool registry (nav, cards, sitemap)
@@ -108,6 +110,27 @@ public/
 - Input is not written to the URL, `localStorage`, `sessionStorage` or cookies.
 - Nothing is logged to the console.
 - Downloads use fixed, sanitised filenames — never the document content.
+
+## Diffing
+
+`src/lib/json-diff.ts` compares two parsed values and returns a flat list of
+changes, not a tree. A flat list is what makes the result copyable into a ticket
+and assertable in a test; the UI only renders it as rows.
+
+Paths start at `$`, use dot notation for identifier keys and bracket notation
+for anything else (`$["content-type"]`), and always use an index for arrays.
+
+Two options change the semantics, and both are honest about it:
+
+- `ignoreKeyOrder` (default `true`) compares objects as sets of members. Turn it
+  off to surface members that are unchanged in value but serialised in a
+  different order — the failure mode behind signature and ETag mismatches.
+- `ignoreArrayOrder` (default `false`) matches elements by value. Because a
+  matched pair is identical by construction, an edited element can never appear
+  as "changed" under this mode: it becomes one removal plus one addition, which
+  the row explains.
+
+Output stops at `MAX_DIFF_ENTRIES` (500) and the result says it was truncated.
 
 ## Guides
 

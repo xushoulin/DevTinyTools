@@ -85,3 +85,41 @@ export const MINIFIER_EXAMPLE = `{
     }
   ]
 }`;
+
+/**
+ * A pair for the diff page: one changed value, one removed member, one added
+ * member and one array element out of order, so the default settings show every
+ * kind of row except a reorder.
+ */
+export const DIFF_BEFORE_EXAMPLE = `{
+  "orderId": "ORD-1001",
+  "status": "pending",
+  "total": 129.5,
+  "currency": "USD",
+  "customer": {
+    "id": "CUS-88",
+    "email": "buyer@example.com",
+    "vip": false
+  },
+  "items": [
+    { "sku": "KB-01", "quantity": 1 },
+    { "sku": "CBL-03", "quantity": 2 }
+  ]
+}`;
+
+export const DIFF_AFTER_EXAMPLE = `{
+  "orderId": "ORD-1001",
+  "status": "shipped",
+  "total": 129.5,
+  "currency": "USD",
+  "customer": {
+    "id": "CUS-88",
+    "email": "buyer@example.com"
+  },
+  "items": [
+    { "sku": "KB-01", "quantity": 1 },
+    { "sku": "CBL-03", "quantity": 3 },
+    { "sku": "MS-07", "quantity": 1 }
+  ],
+  "shippedAt": "2026-10-23T07:40:00Z"
+}`;
