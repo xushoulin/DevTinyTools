@@ -292,12 +292,33 @@ export default function HomePage() {
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: SITE_NAME,
-          url: SITE_URL,
-          description:
-            "Free browser-based developer tools for formatting, validating and minifying JSON.",
-          inLanguage: "en",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": `${SITE_URL}/#organization`,
+              name: SITE_NAME,
+              url: SITE_URL,
+              logo: {
+                "@type": "ImageObject",
+                url: `${SITE_URL}/og-image.png`,
+                width: 1200,
+                height: 630,
+              },
+              description:
+                "An independent project publishing small, browser-based developer tools.",
+            },
+            {
+              "@type": "WebSite",
+              "@id": `${SITE_URL}/#website`,
+              name: SITE_NAME,
+              alternateName: "Dev Tiny Tools",
+              url: SITE_URL,
+              description:
+                "Free browser-based developer tools for formatting, validating, minifying and comparing JSON.",
+              inLanguage: "en",
+              publisher: { "@id": `${SITE_URL}/#organization` },
+            },
+          ],
         }}
       />
     </>

@@ -40,6 +40,7 @@ npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
 npm run test       # Vitest (133 unit tests)
 npm run build      # production build
+npm run indexnow   # push sitemap URLs to IndexNow (Bing, Yandex, Seznam)
 npm run check      # lint + typecheck + test + build
 ```
 
@@ -102,6 +103,10 @@ public/
                            Google Search Console HTML-file verification token.
                            The file name and its single line of content must
                            stay byte-identical, or verification fails.
+  8a604617d70cdd0e7ceeb0ad5ac617f8.txt
+                           IndexNow key. The file name is the key and its
+                           contents must be the same key — IndexNow fetches it
+                           to prove domain control. See "Discovery" below.
 ```
 
 ## Privacy guarantees enforced by the code
@@ -110,6 +115,39 @@ public/
 - Input is not written to the URL, `localStorage`, `sessionStorage` or cookies.
 - Nothing is logged to the console.
 - Downloads use fixed, sanitised filenames — never the document content.
+
+## Discovery
+
+Structured data is emitted by the component that owns the visible thing, never
+by the page, so markup cannot describe a trail the user cannot see:
+
+| Markup | Emitted by | Appears on |
+| --- | --- | --- |
+| `BreadcrumbList` | `components/breadcrumbs.tsx` | every page with a trail |
+| `FAQPage` | `components/faq-section.tsx` | pages with an FAQ block |
+| `Article` | `components/guide-shell.tsx` | each guide |
+| `WebApplication` | the tool pages | each tool |
+| `CollectionPage` + `ItemList` | the guides index | `/guides` |
+| `Organization` + `WebSite` | the homepage | `/` only |
+
+`Organization` and `WebSite` share `@id` values under `#organization` and
+`#website`, so the `WebSite.publisher` reference resolves instead of creating a
+second anonymous organisation.
+
+IndexNow is used for instant re-crawls on Bing, Yandex, Naver and Seznam.
+Google does not participate and has no push API — it discovers pages through the
+sitemap and internal links.
+
+```bash
+npm run indexnow                    # every URL in the live sitemap
+npm run indexnow -- /json-diff      # one path
+npm run indexnow -- --dry-run       # print the payload, send nothing
+```
+
+The key lives in `public/<key>.txt`: the file name is the key, its contents are
+the same key, and IndexNow verifies the domain by fetching it. `indexnow.mjs`
+finds the file by name, so there is nothing to configure — but exactly one such
+file may exist in `public/`, and the script refuses to run otherwise.
 
 ## Diffing
 
