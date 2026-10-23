@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ContentSection, ProseList } from "@/components/content-section";
 import { pageMetadata } from "@/lib/metadata";
-import { SITE_NAME } from "@/lib/site";
+import { GITHUB_REPO_URL, SITE_NAME } from "@/lib/site";
 import { PLANNED_TOOLS, TOOLS } from "@/lib/tools";
 
 export const metadata = pageMetadata({
@@ -54,6 +54,19 @@ export default function AboutPage() {
             endpoint behind the buttons, which is the simplest way to guarantee that the
             document you paste never leaves your machine.
           </p>
+          <p>
+            That claim is verifiable rather than a promise: the code is public, so you can
+            read what the browser actually runs.{" "}
+            <a
+              href={GITHUB_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline underline-offset-2"
+            >
+              Source on GitHub
+            </a>
+            .
+          </p>
         </ContentSection>
 
         <ContentSection id="principles" title="Principles">
@@ -86,7 +99,7 @@ export default function AboutPage() {
         </ContentSection>
 
         <ContentSection id="available" title="What is available today">
-          <p>Three tools are live:</p>
+          <p>{TOOLS.length} tools are live:</p>
           <ul className="space-y-2">
             {TOOLS.map((tool) => (
               <li key={tool.href}>
@@ -101,9 +114,11 @@ export default function AboutPage() {
             ))}
           </ul>
           <p className="pt-1">
-            Two more are planned: {PLANNED_TOOLS.map((tool) => tool.name).join(" and ")}. They
-            are listed on the homepage without links, because publishing empty placeholder
-            pages would not help anyone.
+            {PLANNED_TOOLS.length === 1 ? "One more is planned" : `${PLANNED_TOOLS.length} more are planned`}
+            {": "}
+            {PLANNED_TOOLS.map((tool) => tool.name).join(" and ")}. They are listed on the
+            homepage without links, because publishing empty placeholder pages would not
+            help anyone.
           </p>
         </ContentSection>
 

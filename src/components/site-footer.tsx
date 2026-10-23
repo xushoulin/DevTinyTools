@@ -1,12 +1,20 @@
 import Link from "next/link";
 import { TOOLS } from "@/lib/tools";
-import { SITE_NAME } from "@/lib/site";
+import { GITHUB_REPO_URL, SITE_NAME } from "@/lib/site";
 
-const SITE_LINKS = [
+/**
+ * Internal links render through next/link; `external` entries render as a
+ * plain anchor, because next/link would try to prefetch a route that does not
+ * exist in this app.
+ */
+type FooterLink = { href: string; label: string; external?: boolean };
+
+const SITE_LINKS: FooterLink[] = [
   { href: "/guides", label: "Guides" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: GITHUB_REPO_URL, label: "Source on GitHub", external: true },
 ];
 
 export function SiteFooter() {
@@ -57,12 +65,23 @@ export function SiteFooter() {
             <ul className="mt-3 space-y-2">
               {SITE_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-slate-600 hover:text-slate-900 hover:underline"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-slate-600 hover:text-slate-900 hover:underline"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="text-sm text-slate-600 hover:text-slate-900 hover:underline"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

@@ -182,3 +182,13 @@ export function absoluteUrl(path = "/"): string {
 }
 
 export const PRIVACY_LAST_UPDATED = "October 22, 2026";
+
+/**
+ * Public source repository.
+ *
+ * Linked from the footer and from /about so a reader can check the "nothing is
+ * uploaded" claim instead of taking it on trust. The first question a
+ * developer asks about a tool like this is "where is the code", and a reader
+ * who cannot find the answer assumes the answer is bad.
+ */
+export const GITHUB_REPO_URL = "https://github.com/xushoulin/DevTinyTools";
