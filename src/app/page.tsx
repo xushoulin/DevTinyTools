@@ -11,7 +11,7 @@ import { PLANNED_TOOLS, TOOLS } from "@/lib/tools";
 export const metadata = pageMetadata({
   title: `${SITE_NAME} — Free Online Developer Tools`,
   description:
-    "Free browser-based developer tools. Format, validate and minify JSON with no uploads and no sign-up.",
+    "Free browser-based developer tools. Format, validate, minify and diff JSON with no uploads and no sign-up.",
   path: "/",
 });
 
