@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import {
   GUIDES,
+  GUIDE_TOPICS,
   formatGuideDate,
   getGuide,
   otherGuides,
@@ -69,6 +72,40 @@ describe("GUIDES registry", () => {
       expect(guide.readingMinutes).toBeGreaterThanOrEqual(3);
       expect(guide.readingMinutes).toBeLessThanOrEqual(30);
     }
+  });
+
+  it("has a page file on disk for every registered guide", () => {
+    const guidesDir = join(process.cwd(), "src", "app", "guides");
+
+    for (const guide of GUIDES) {
+      expect(existsSync(join(guidesDir, guide.slug, "page.tsx"))).toBe(true);
+    }
+  });
+
+  it("keeps H1 titles unique, since two pages competing for one query is a self-inflicted problem", () => {
+    const titles = GUIDES.map((guide) => guide.title);
+    expect(new Set(titles).size).toBe(titles.length);
+  });
+
+  it("uses one of the declared topics", () => {
+    for (const guide of GUIDES) {
+      expect(GUIDE_TOPICS).toContain(guide.topic);
+    }
+  });
+
+  it("never changes a slug once published, because it is the URL", () => {
+    // Guards the one edit that would break an indexed link: the sitemap and the
+    // page file both derive from this value.
+    const expected = [
+      "json-error-messages-explained",
+      "why-json-numbers-lose-precision",
+      "json-minify-vs-gzip",
+      "json-unexpected-token-at-position-0",
+      "how-to-compare-two-json-files",
+      "json5-trailing-commas-and-comments",
+    ];
+
+    expect(GUIDES.map((guide) => guide.slug)).toEqual(expected);
   });
 });
 

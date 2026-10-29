@@ -198,6 +198,18 @@ export default function JsonDiffPage() {
               covers the other half of the same problem, where a round trip silently rewrites
               the bytes.
             </p>
+            <p>
+              For the longer version — the three kinds of order, why an edited array element
+              becomes a removal plus an addition, and the one difference a parsed comparison
+              cannot see — read{" "}
+              <Link
+                href="/guides/how-to-compare-two-json-files"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                How to compare two JSON files
+              </Link>
+              .
+            </p>
           </ContentSection>
 
           <ContentSection id="limits" title="What this page does not do">

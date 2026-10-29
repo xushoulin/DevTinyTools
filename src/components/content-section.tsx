@@ -42,6 +42,26 @@ export function ProseList({ items }: { items: ReactNode[] }) {
   );
 }
 
+export function InlineCode({ children }: { children: ReactNode }) {
+  return (
+    <code className="rounded bg-slate-100 px-1 py-0.5 text-[12px] text-slate-800">
+      {children}
+    </code>
+  );
+}
+
+/**
+ * Fenced block for snippets that must keep their line breaks. The content is
+ * passed as a template string, so backslashes and quotes survive untouched.
+ */
+export function CodeBlock({ children }: { children: string }) {
+  return (
+    <pre className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-[12px] leading-relaxed text-slate-700">
+      <code>{children}</code>
+    </pre>
+  );
+}
+
 export function StepList({ steps }: { steps: Array<{ title: string; body: string }> }) {
   return (
     <ol className="mt-1 space-y-3">

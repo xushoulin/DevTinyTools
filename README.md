@@ -15,9 +15,12 @@ Current tools:
 | `/json-minifier`  | JSON Minifier               |
 | `/json-diff`      | JSON Diff Checker           |
 | `/guides`         | Guide index                 |
-| `/guides/json-error-messages-explained` | Parser errors, decoded |
+| `/guides/json-error-messages-explained` | Parser errors, explained |
 | `/guides/why-json-numbers-lose-precision` | Number precision |
 | `/guides/json-minify-vs-gzip` | Minify vs gzip / brotli |
+| `/guides/json-unexpected-token-at-position-0` | Position 0 means HTML came back |
+| `/guides/how-to-compare-two-json-files` | Comparing two documents |
+| `/guides/json5-trailing-commas-and-comments` | JSON5 and JSONC syntax |
 | `/about`          | About the site              |
 | `/contact`        | Contact information         |
 | `/privacy-policy` | Privacy policy              |
@@ -40,7 +43,7 @@ npm install        # install dependencies
 npm run dev        # dev server on http://localhost:3000
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run test       # Vitest (133 unit tests)
+npm run test       # Vitest (137 unit tests)
 npm run build      # production build
 npm run indexnow   # push sitemap URLs to IndexNow (Bing, Yandex, Seznam)
 npm run check      # lint + typecheck + test + build
@@ -179,7 +182,7 @@ homepage cards and the "more guides" list all read from it, so a guide cannot
 exist as a page while being invisible everywhere else.
 
 Each guide is a hand-written page under `src/app/guides/<slug>/page.tsx` — a
-catch-all route would only add a lookup layer on top of three files. They share
+catch-all route would only add a lookup layer on top of six files. They share
 `src/components/guide-shell.tsx`, which renders the breadcrumbs, title block,
 the closing tool call-to-action, the other guides, and the `Article` structured
 data. A guide therefore cannot ship without its JSON-LD.
@@ -189,7 +192,11 @@ tool pages read as well. One measured table, two readers: the guide and the tool
 page cannot drift apart.
 
 Slugs, hrefs, description length, publishing dates and the `relatedTool` link
-are all asserted in `src/lib/guides.test.ts`.
+are all asserted in `src/lib/guides.test.ts`, along with two things that only
+break in production: that every registered slug has a page file on disk (a
+registry entry without one becomes a 404 in the sitemap), and that the published
+slug list is unchanged — the slug is the URL, so renaming one breaks an indexed
+link for good.
 
 ## Advertising
 

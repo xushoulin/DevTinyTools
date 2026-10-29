@@ -10,7 +10,7 @@ const PATH = "/guides";
 export const metadata = pageMetadata({
   title: "JSON Guides",
   description:
-    "Short, measured guides to JSON behaviour: parser error messages, number precision and whether minifying actually saves bandwidth.",
+    "Short, measured guides to JSON behaviour: parser errors, number precision, comparing two documents, JSON5 syntax and whether minifying saves bandwidth.",
   path: PATH,
 });
 
@@ -76,6 +76,10 @@ export default function GuidesIndexPage() {
           or the{" "}
           <Link href="/json-minifier" className="text-blue-700 underline underline-offset-2">
             JSON Minifier
+          </Link>{" "}
+          or the{" "}
+          <Link href="/json-diff" className="text-blue-700 underline underline-offset-2">
+            JSON Diff
           </Link>
           .
         </p>
@@ -89,7 +93,7 @@ export default function GuidesIndexPage() {
           url: absoluteUrl(PATH),
           inLanguage: "en",
           description:
-            "Short, measured guides to JSON parser errors, number precision and minification.",
+            "Short, measured guides to JSON parser errors, number precision, document comparison, JSON5 syntax and minification.",
           mainEntity: {
             "@type": "ItemList",
             numberOfItems: GUIDES.length,

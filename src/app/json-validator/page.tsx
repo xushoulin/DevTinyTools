@@ -245,6 +245,25 @@ export default function JsonValidatorPage() {
               </Link>
               .
             </p>
+            <p>
+              Two specific cases get their own write-ups, because the messages mislead in
+              different ways:{" "}
+              <Link
+                href="/guides/json-unexpected-token-at-position-0"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                a failure at position 0
+              </Link>{" "}
+              means the response was never JSON — it was an HTML error page, an app shell or a
+              login redirect — while{" "}
+              <Link
+                href="/guides/json5-trailing-commas-and-comments"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                trailing commas and comments
+              </Link>{" "}
+              mean the file came from a JSONC or JSON5 reader.
+            </p>
           </ContentSection>
 
           <ContentSection id="structure-summary" title="Why a structure summary helps">
