@@ -3,7 +3,7 @@ import { ContentSection, ProseList } from "@/components/content-section";
 import { FaqSection } from "@/components/faq-section";
 import { GuideShell } from "@/components/guide-shell";
 import { getGuide } from "@/lib/guides";
-import { ENGINE_MESSAGES } from "@/lib/json-references";
+import { ENGINE_MESSAGES, CROSS_ENGINE_CASES, CROSS_ENGINE_VERSIONS } from "@/lib/json-references";
 import { pageMetadata } from "@/lib/metadata";
 
 const SLUG = "json-error-messages-explained";
@@ -36,7 +36,23 @@ const FAQ = [
     answer:
       "It is never wrong about where the parser stopped, but that is not always where the mistake is. A missing comma is only noticed when the parser meets the next key, so the reported position sits a few characters after the real cause. Read the message as “I gave up here”, not “the problem is here”.",
   },
+  {
+    question: "“Expecting value: line 1 column 1 (char 0)” — what is wrong?",
+    answer:
+      "That is Python’s message, and column 1 means it found nothing parseable at the very first character. The usual causes are an empty response body, an HTML error page instead of JSON, or a byte-order mark. Print the first twenty characters of the string before parsing it.",
+  },
+  {
+    question: "Why does MySQL say “The document is empty”?",
+    answer:
+      "MySQL 8 rejects an empty string passed to a JSON column or CAST … AS JSON with that wording, which no JavaScript parser uses. It means the same thing as an empty response body: the column or driver received zero characters, so no parsing ever started.",
+  },
 ];
+
+const ENGINE_ROWS = [
+  { label: "Node 22", key: "node" },
+  { label: "Python", key: "python" },
+  { label: "MySQL", key: "mysql" },
+] as const;
 
 export default function Page() {
   return (
@@ -209,6 +225,75 @@ export default function Page() {
             </>,
           ]}
         />
+      </ContentSection>
+
+      <ContentSection
+        id="same-failure-other-engines"
+        title="The same failure, worded by three engines"
+      >
+        <p>
+          If the message you are staring at is not in the list above, it came from a
+          different engine. These five inputs were run through {CROSS_ENGINE_VERSIONS.node},{" "}
+          {CROSS_ENGINE_VERSIONS.python} and {CROSS_ENGINE_VERSIONS.mysql}. Nothing below
+          is paraphrased, and nothing was taken from documentation.
+        </p>
+        <div className="space-y-3">
+          {CROSS_ENGINE_CASES.map((row) => (
+            <div
+              key={row.scenario}
+              className="rounded-lg border border-slate-200 bg-white p-3.5"
+            >
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <code className="rounded bg-slate-100 px-1 py-0.5 font-mono text-[12px] text-slate-800">
+                  {row.input === "" ? "(empty string)" : row.input}
+                </code>
+                <span className="text-xs text-slate-500">{row.scenario}</span>
+              </div>
+              <dl className="mt-2.5 space-y-1.5">
+                {ENGINE_ROWS.map((engine) => {
+                  const message = row[engine.key];
+                  return (
+                    <div
+                      key={engine.label}
+                      className="grid gap-x-3 gap-y-0.5 sm:grid-cols-[5rem_1fr]"
+                    >
+                      <dt className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">
+                        {engine.label}
+                      </dt>
+                      <dd
+                        className={
+                          message === null
+                            ? "font-mono text-[11px] leading-relaxed break-words text-emerald-700"
+                            : "font-mono text-[11px] leading-relaxed break-words text-slate-700"
+                        }
+                      >
+                        {message ?? "accepted, no error"}
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </div>
+          ))}
+        </div>
+        <p>
+          Two things follow. First, search for the wording you actually see:{" "}
+          <em>The document is empty</em> exists only in MySQL&apos;s phrasing, so a page
+          that lists V8 messages alone cannot answer it. Second,{" "}
+          <code className="rounded bg-slate-100 px-1 py-0.5 text-[12px]">
+            line 1 column 1 (char 0)
+          </code>{" "}
+          is Python saying it never got started — an empty body and a complete HTML page
+          produce the same message and the same position, so the number tells you nothing
+          about the cause.
+        </p>
+        <p>
+          The last row is the interesting one. Python accepts <code>NaN</code> and returns
+          a float, while V8 and MySQL both reject it. RFC 8259 defines no such literal, so
+          a strict reading says Python is wrong here — which is why “is this valid JSON”
+          has more than one answer in practice. If a document has to be interchangeable,
+          keep it to the value types the specification defines.
+        </p>
       </ContentSection>
 
       <ContentSection id="wording-differs" title="The wording is not portable">

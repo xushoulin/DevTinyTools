@@ -56,6 +56,67 @@ export const ENGINE_MESSAGES: EngineMessage[] = [
   },
 ];
 
+/**
+ * The same broken input run through three independent engines.
+ *
+ * `null` means the engine accepted the input instead of rejecting it — which is
+ * itself a finding worth showing, because it means "is this valid JSON" has
+ * more than one answer in practice.
+ */
+export interface CrossEngineCase {
+  /** Input as the reader would paste it. */
+  input: string;
+  /** What the reader is trying to do, in plain words. */
+  scenario: string;
+  node: string | null;
+  python: string | null;
+  mysql: string | null;
+}
+
+export const CROSS_ENGINE_VERSIONS = {
+  node: "Node 22.22.2 (V8)",
+  python: "Python 3.13.12 (json)",
+  mysql: "MySQL 8.4.3 (CAST … AS JSON)",
+} as const;
+
+export const CROSS_ENGINE_CASES: CrossEngineCase[] = [
+  {
+    input: "",
+    scenario: "Empty response body",
+    node: "Unexpected end of JSON input",
+    python: "Expecting value: line 1 column 1 (char 0)",
+    mysql: '"The document is empty." at position 0.',
+  },
+  {
+    input: "<!DOCTYPE html>",
+    scenario: "An HTML page arrived instead of JSON",
+    node: `Unexpected token '<', "<!DOCTYPE html>" is not valid JSON`,
+    python: "Expecting value: line 1 column 1 (char 0)",
+    mysql: '"Invalid value." at position 0.',
+  },
+  {
+    input: '{"a":1,}',
+    scenario: "Trailing comma",
+    node: "Expected double-quoted property name in JSON at position 7 (line 1 column 8)",
+    python: "Illegal trailing comma before end of object: line 1 column 7 (char 6)",
+    mysql: '"Missing a name for object member." at position 7.',
+  },
+  {
+    input: '{"a":1}{"b":2}',
+    scenario: "Two documents concatenated",
+    node: "Unexpected non-whitespace character after JSON at position 7 (line 1 column 8)",
+    python: "Extra data: line 1 column 8 (char 7)",
+    mysql: '"The document root must not be followed by other values." at position 7.',
+  },
+  {
+    input: "NaN",
+    scenario: "A JavaScript literal that JSON does not have",
+    node: '"NaN" is not valid JSON',
+    python: null,
+    mysql: '"Invalid value." at position 0.',
+  },
+];
+
 /** What `JSON.parse` → `JSON.stringify` does to a document. */
 export interface RoundTripCase {
   input: string;
