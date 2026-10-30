@@ -49,7 +49,7 @@ export const GUIDES: GuideDefinition[] = [
   {
     slug: "json-error-messages-explained",
     href: "/guides/json-error-messages-explained",
-    title: "JSON parse errors explained: what each message means",
+    title: "JSON parse errors: what each message means",
     shortTitle: "Parse errors",
     description:
       "What “Unexpected token”, “Expected property name” and the other JSON.parse messages actually mean, with the exact input that triggers each one.",
@@ -66,7 +66,7 @@ export const GUIDES: GuideDefinition[] = [
   {
     slug: "why-json-numbers-lose-precision",
     href: "/guides/why-json-numbers-lose-precision",
-    title: "Why JSON numbers lose precision (and how to keep big IDs intact)",
+    title: "Why JSON numbers lose precision above 2^53",
     shortTitle: "Number precision",
     description:
       "Integers above 2^53, reordered keys and silently dropped duplicates: what a JSON.parse round trip really does, and how to keep big IDs intact.",
@@ -83,7 +83,7 @@ export const GUIDES: GuideDefinition[] = [
   {
     slug: "json-minify-vs-gzip",
     href: "/guides/json-minify-vs-gzip",
-    title: "Does minifying JSON save bandwidth? Measured against gzip and brotli",
+    title: "Does minifying JSON beat gzip and brotli?",
     shortTitle: "Minify vs gzip",
     description:
       "Minifying a 216 KB JSON file removes 43.7% of its bytes, yet only saves about 5% once gzip or brotli runs. Here is when each step is worth it.",
@@ -100,7 +100,7 @@ export const GUIDES: GuideDefinition[] = [
   {
     slug: "json-unexpected-token-at-position-0",
     href: "/guides/json-unexpected-token-at-position-0",
-    title: "Unexpected token '<' in JSON at position 0: what your API actually sent",
+    title: "Unexpected token '<' in JSON at position 0",
     shortTitle: "Position 0",
     description:
       "Your API returned HTML, not JSON. The messages behind an SPA fallback, a 404 page, a proxy error and a byte-order mark — and how to see the body.",
@@ -116,7 +116,7 @@ export const GUIDES: GuideDefinition[] = [
   {
     slug: "how-to-compare-two-json-files",
     href: "/guides/how-to-compare-two-json-files",
-    title: "How to compare two JSON files without drowning in key order",
+    title: "Compare two JSON files, ignoring key order",
     shortTitle: "Comparing files",
     description:
       "Text diffs break on formatting and key order. What a structural comparison should report, why array order is a choice, and the difference parsing cannot see.",
@@ -132,7 +132,7 @@ export const GUIDES: GuideDefinition[] = [
   {
     slug: "json5-trailing-commas-and-comments",
     href: "/guides/json5-trailing-commas-and-comments",
-    title: "Trailing commas, comments and single quotes: why your JSON5 is not JSON",
+    title: "Trailing commas and comments: why JSON5 fails",
     shortTitle: "JSON5 vs JSON",
     description:
       "The exact messages for trailing commas, comments, single quotes and unquoted keys, which files legitimately allow them, and how to convert without hand-editing.",
