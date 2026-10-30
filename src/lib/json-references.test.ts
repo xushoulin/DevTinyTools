@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CROSS_ENGINE_CASES, CROSS_ENGINE_VERSIONS } from "./json-references";
+import { CROSS_ENGINE_CASES, CROSS_ENGINE_VERSIONS, ENGINE_MESSAGES } from "./json-references";
 
 /**
  * The cross-engine table is quoted verbatim on a guide page, so the same two
@@ -52,6 +52,45 @@ describe("cross-engine messages", () => {
   it("names the exact build each column was measured on", () => {
     for (const value of Object.values(CROSS_ENGINE_VERSIONS)) {
       expect(value).toMatch(/\d+\.\d+/);
+    }
+  });
+});
+
+/**
+ * `ENGINE_MESSAGES` claims every string in it is verbatim. This re-runs each
+ * input through the engine the test process is using and compares the message
+ * character for character, so a hand-edited or paraphrased row fails here
+ * instead of shipping to a page that promises the wording is exact.
+ *
+ * If this test fails after a runtime upgrade, the runtime changed its wording —
+ * update the rows and the Node version named on the page, not the assertion.
+ */
+describe("engine messages are verbatim", () => {
+  it("reproduces each quoted message exactly", () => {
+    for (const row of ENGINE_MESSAGES) {
+      let actual: string | null = null;
+      try {
+        JSON.parse(row.input);
+      } catch (error) {
+        actual = (error as Error).message;
+      }
+
+      expect(actual, `input ${JSON.stringify(row.input)} was accepted`).not.toBeNull();
+      expect(actual).toBe(row.message);
+    }
+  });
+
+  it("does not reuse an input or a message", () => {
+    const inputs = ENGINE_MESSAGES.map((row) => row.input);
+    expect(new Set(inputs).size).toBe(inputs.length);
+
+    const messages = ENGINE_MESSAGES.map((row) => row.message);
+    expect(new Set(messages).size).toBe(messages.length);
+  });
+
+  it("explains every row", () => {
+    for (const row of ENGINE_MESSAGES) {
+      expect(row.note.length).toBeGreaterThan(20);
     }
   });
 });

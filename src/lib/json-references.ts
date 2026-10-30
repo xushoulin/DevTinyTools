@@ -54,6 +54,16 @@ export const ENGINE_MESSAGES: EngineMessage[] = [
     message: `Unexpected token 'N', "{"a":NaN}" is not valid JSON`,
     note: "NaN is a JavaScript value, not a JSON one.",
   },
+  {
+    input: `\uFEFF{"a":1}`,
+    message: `Unexpected token '\uFEFF', "\uFEFF{"a":1}" is not valid JSON`,
+    note: "A UTF-8 BOM sits in front of the brace. The character between the single quotes is U+FEFF, which renders as nothing — that is why the message looks like it is complaining about a blank.",
+  },
+  {
+    input: `undefined`,
+    message: `"undefined" is not valid JSON`,
+    note: "No “Unexpected token” prefix at all: V8 quotes the whole input instead. A variable that is still undefined reaches JSON.parse this way more often than a typo does.",
+  },
 ];
 
 /**
