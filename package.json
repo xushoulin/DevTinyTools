@@ -2,6 +2,7 @@
   "name": "devtinytools",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Free online developer tools. Format, validate and minify JSON in your browser.",
   "scripts": {
     "dev": "next dev",
