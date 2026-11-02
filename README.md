@@ -14,6 +14,7 @@ Current tools:
 | `/json-validator` | JSON Validator              |
 | `/json-minifier`  | JSON Minifier               |
 | `/json-diff`      | JSON Diff Checker           |
+| `/json-escape`    | JSON Escape & Unescape      |
 | `/guides`         | Guide index                 |
 | `/guides/json-error-messages-explained` | Parser errors, explained |
 | `/guides/why-json-numbers-lose-precision` | Number precision |
@@ -21,6 +22,7 @@ Current tools:
 | `/guides/json-unexpected-token-at-position-0` | Position 0 means HTML came back |
 | `/guides/how-to-compare-two-json-files` | Comparing two documents |
 | `/guides/json5-trailing-commas-and-comments` | JSON5 and JSONC syntax |
+| `/guides/json-unexpected-end-of-json-input` | Truncation vs a missing value |
 | `/about`          | About the site              |
 | `/contact`        | Contact information         |
 | `/privacy-policy` | Privacy policy              |
@@ -43,7 +45,7 @@ npm install        # install dependencies
 npm run dev        # dev server on http://localhost:3000
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run test       # Vitest (148 unit tests)
+npm run test       # Vitest (173 unit tests)
 npm run build      # production build
 npm run indexnow   # push sitemap URLs to IndexNow (Bing, Yandex, Seznam)
 npm run check      # lint + typecheck + test + build
@@ -94,6 +96,7 @@ src/
   lib/
     json-utils.ts          parse / format / minify / analyse + error location
     json-diff.ts           structural comparison with paths and order options
+    json-escape.ts         escape/unescape, strict first then lenient with notes
     examples.ts            sample documents
     site.ts                site config and URL resolution
     tools.ts               tool registry (nav, cards, sitemap)

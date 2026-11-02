@@ -123,3 +123,13 @@ export const DIFF_AFTER_EXAMPLE = `{
   ],
   "shippedAt": "2026-10-23T07:40:00Z"
 }`;
+
+/** Raw text with quotes, a backslash path, a tab and an emoji, for the escaper. */
+export const ESCAPE_EXAMPLE = `He said "ship it" — then left.
+
+Path: C:\\Users\\ada\\notes.txt
+Indent:	one tab
+Emoji: 😀`;
+
+/** An escaped string, including one sequence JSON does not define. */
+export const UNESCAPE_EXAMPLE = `"Line one\\nLine two\\tindented \\u00e9 \\u2615 \\x41 done"`;

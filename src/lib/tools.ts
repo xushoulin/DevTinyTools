@@ -56,6 +56,16 @@ export const TOOLS: ToolDefinition[] = [
       "Compare two JSON documents and see every added, removed and changed value with its exact path. Optional key-order and array-order matching. Runs in your browser.",
     category: "JSON",
   },
+  {
+    href: "/json-escape",
+    name: "JSON Escape",
+    heading: "JSON Escape & Unescape",
+    summary:
+      "Turn raw text into a JSON string value, or decode backslashes and \\u escapes back into readable text.",
+    description:
+      "Escape text for a JSON string or unescape \\u00e9, \\n and \\\" back to plain text. Flags sequences that are not valid JSON. Runs in your browser.",
+    category: "JSON",
+  },
 ];
 
 export const PLANNED_TOOLS = [

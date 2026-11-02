@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   CROSS_ENGINE_CASES,
   CROSS_ENGINE_VERSIONS,
+  ENCODING_CASES,
+  ENCODING_SIZE,
   ENGINE_MESSAGES,
+  ESCAPE_CASES,
+  ESCAPE_VERSIONS,
   TRUNCATION_CASES,
 } from "./json-references";
 
@@ -132,5 +136,56 @@ describe("truncation cases are verbatim on V8", () => {
       expect(row.scenario.length).toBeGreaterThan(8);
       expect(Object.values(CROSS_ENGINE_VERSIONS).length).toBe(3);
     }
+  });
+});
+
+describe("escape cases", () => {
+  it("reproduces the V8 column exactly", () => {
+    for (const row of ESCAPE_CASES) {
+      const literal = `"${row.sequence}"`;
+
+      if (row.node === "Accepted, keeps the lone surrogate") {
+        const value = JSON.parse(literal) as string;
+        expect(value.length).toBe(1);
+        expect(value.charCodeAt(0)).toBe(0xd800);
+        continue;
+      }
+
+      if (row.node.startsWith("Accepted, produces ")) {
+        const value = JSON.parse(literal) as string;
+        expect(row.node).toBe(`Accepted, produces ${value}`);
+        continue;
+      }
+
+      expect(() => JSON.parse(literal)).toThrow(row.node);
+    }
+  });
+
+  it("explains why each sequence was attempted", () => {
+    for (const row of ESCAPE_CASES) {
+      expect(row.intent.length).toBeGreaterThan(20);
+      expect(row.python.length).toBeGreaterThan(0);
+      expect(row.ruby.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("names the three runtimes the table was measured on", () => {
+    expect(Object.values(ESCAPE_VERSIONS)).toHaveLength(3);
+    expect(ESCAPE_VERSIONS.ruby).toMatch(/2\.6/);
+  });
+
+  it("quotes the Node serialization default", () => {
+    for (const row of ENCODING_CASES) {
+      const inner = JSON.stringify(row.character).slice(1, -1);
+      expect(row.node, `${row.label} differs from JSON.stringify`).toBe(inner);
+    }
+  });
+
+  it("keeps the byte figures consistent with the sample", () => {
+    expect(ENCODING_SIZE.escapedBytes).toBe(ENCODING_SIZE.escapedChars);
+    // Both counts include the two double quotes json.dumps wraps around a string.
+    expect(ENCODING_SIZE.rawChars).toBe([...ENCODING_SIZE.sample].length + 2);
+    expect(ENCODING_SIZE.rawBytes).toBeGreaterThan(ENCODING_SIZE.rawChars);
+    expect(ENCODING_SIZE.escapedBytes).toBeGreaterThan(ENCODING_SIZE.rawBytes);
   });
 });

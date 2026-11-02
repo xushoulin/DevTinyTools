@@ -244,3 +244,109 @@ export const SIZE_MEASUREMENTS: SizeMeasurement[] = [
 /** Where the numbers came from, quoted on the pages that show them. */
 export const MEASUREMENT_PROVENANCE =
   "Measurements on this site come from running the inputs through this project's Node build (V8) and its bundled zlib, not from a vendor's documentation.";
+
+export const ESCAPE_VERSIONS = {
+  node: "Node 22.22.2 (V8)",
+  python: "Python 3.13.12 (json)",
+  ruby: "Ruby 2.6.10 (json 2.1.0)",
+} as const;
+
+export interface EscapeCase {
+  /** The sequence as typed inside a JSON string, backslash included. */
+  sequence: string;
+  /** What the person typing it was trying to do. */
+  intent: string;
+  node: string;
+  python: string;
+  ruby: string;
+}
+
+/**
+ * How three parsers treat escape sequences that JSON does not define. Every
+ * cell is the literal output of running the sequence, or the literal message
+ * the parser raised.
+ */
+export const ESCAPE_CASES: EscapeCase[] = [
+  {
+    sequence: "\\x41",
+    intent: "Write the letter A using the JavaScript short form",
+    node: "Bad escaped character in JSON at position 2 (line 1 column 3)",
+    python: "Invalid \\escape: line 1 column 2 (char 1)",
+    ruby: "Accepted, produces x41",
+  },
+  {
+    sequence: "\\0",
+    intent: "Write a null byte with the C-style NUL escape",
+    node: "Bad escaped character in JSON at position 2 (line 1 column 3)",
+    python: "Invalid \\escape: line 1 column 2 (char 1)",
+    ruby: "Accepted, produces 0",
+  },
+  {
+    sequence: "\\'",
+    intent: "Write a single quote as if this were JavaScript or SQL",
+    node: "Bad escaped character in JSON at position 2 (line 1 column 3)",
+    python: "Invalid \\escape: line 1 column 2 (char 1)",
+    ruby: "Accepted, produces '",
+  },
+  {
+    sequence: "\\u12",
+    intent: "Write a Unicode character but one digit short",
+    node: "Bad Unicode escape in JSON at position 5 (line 1 column 6)",
+    python: "Invalid \\uXXXX escape: line 1 column 3 (char 2)",
+    ruby: "unexpected token at '\"\\u12\"'",
+  },
+  {
+    sequence: "\\u{1F600}",
+    intent: "Write an emoji using the ES2015 braced form",
+    node: "Bad Unicode escape in JSON at position 3 (line 1 column 4)",
+    python: "Invalid \\uXXXX escape: line 1 column 3 (char 2)",
+    ruby: "unexpected token at '\"\\u{1F600}\"'",
+  },
+  {
+    sequence: "\\ud800",
+    intent: "Write half of a surrogate pair",
+    node: "Accepted, keeps the lone surrogate",
+    python: "Accepted, keeps the lone surrogate",
+    ruby: "incomplete surrogate pair at '\\ud800\"'",
+  },
+  {
+    sequence: "\\/",
+    intent: "Escape a forward slash the way PHP's json_encode does",
+    node: "Accepted, produces /",
+    python: "Accepted, produces /",
+    ruby: "Accepted, produces /",
+  },
+];
+
+export interface EncodingCase {
+  label: string;
+  character: string;
+  /** JSON.stringify, default arguments. */
+  node: string;
+  /** json.dumps, default arguments, i.e. ensure_ascii=True. */
+  python: string;
+  /** JSON.generate. */
+  ruby: string;
+}
+
+/** What each serializer does to a character when it is handed one. */
+export const ENCODING_CASES: EncodingCase[] = [
+  { label: "Accented letter", character: "é", node: "é", python: "\\u00e9", ruby: "é" },
+  { label: "Emoji", character: "😀", node: "😀", python: "\\ud83d\\ude00", ruby: "😀" },
+  { label: "Forward slash", character: "/", node: "/", python: "/", ruby: "/" },
+  { label: "Vertical tab", character: "\u000b", node: "\\u000b", python: "\\u000b", ruby: "\\u000b" },
+];
+
+/**
+ * A string with accented letters, an emoji and CJK, serialized both ways.
+ * Python's default escapes all of it; kept raw it is smaller in bytes but no
+ * longer ASCII-only. Counts include the two surrounding quotes, because that is
+ * what json.dumps actually returns.
+ */
+export const ENCODING_SIZE = {
+  sample: "café ☕ 用户",
+  escapedChars: 31,
+  escapedBytes: 31,
+  rawChars: 11,
+  rawBytes: 18,
+} as const;
