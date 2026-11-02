@@ -158,7 +158,7 @@ export default function JsonEscapePage() {
               answers. This is measured on {ESCAPE_VERSIONS.node}, {ESCAPE_VERSIONS.python} and{" "}
               {ESCAPE_VERSIONS.ruby}, each with default arguments:
             </p>
-            <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
               <table className="w-full border-collapse text-left text-[13px]">
                 <caption className="sr-only">
                   How three serializers encode the same character by default
