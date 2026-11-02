@@ -127,6 +127,61 @@ export const CROSS_ENGINE_CASES: CrossEngineCase[] = [
   },
 ];
 
+/**
+ * Inputs that all *look* like "the JSON got cut off", run through the same
+ * three engines.
+ *
+ * Kept together because the result is counter-intuitive: only two of these six
+ * produce `Unexpected end of JSON input` in V8, and the other four — every one
+ * of them equally truncation — produce something else entirely. That is the
+ * useful finding: the message describes the parser's state at the moment it
+ * gave up, not the cause of the damage.
+ */
+export const TRUNCATION_CASES: CrossEngineCase[] = [
+  {
+    input: "",
+    scenario: "Nothing arrived at all",
+    node: "Unexpected end of JSON input",
+    python: "Expecting value: line 1 column 1 (char 0)",
+    mysql: `"The document is empty." at position 0.`,
+  },
+  {
+    input: "   ",
+    scenario: "Whitespace arrived, but no value",
+    node: "Unexpected end of JSON input",
+    python: "Expecting value: line 1 column 4 (char 3)",
+    mysql: `"The document is empty." at position 3.`,
+  },
+  {
+    input: '{"a":',
+    scenario: "Cut off immediately after the colon",
+    node: "Unexpected end of JSON input",
+    python: "Expecting value: line 1 column 6 (char 5)",
+    mysql: `"Invalid value." at position 5.`,
+  },
+  {
+    input: "{",
+    scenario: "Cut off immediately after the opening brace",
+    node: "Expected property name or '}' in JSON at position 1 (line 1 column 2)",
+    python: "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+    mysql: `"Missing a name for object member." at position 1.`,
+  },
+  {
+    input: "[1,2",
+    scenario: "Cut off inside an array",
+    node: "Expected ',' or ']' after array element in JSON at position 4 (line 1 column 5)",
+    python: "Expecting ',' delimiter: line 1 column 5 (char 4)",
+    mysql: `"Missing a comma or ']' after an array element." at position 4.`,
+  },
+  {
+    input: '"abc',
+    scenario: "A string that never closes",
+    node: "Unterminated string in JSON at position 4 (line 1 column 5)",
+    python: "Unterminated string starting at: line 1 column 1 (char 0)",
+    mysql: `"Missing a closing quotation mark in string." at position 4.`,
+  },
+];
+
 /** What `JSON.parse` → `JSON.stringify` does to a document. */
 export interface RoundTripCase {
   input: string;

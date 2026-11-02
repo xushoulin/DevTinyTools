@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { CROSS_ENGINE_CASES, CROSS_ENGINE_VERSIONS, ENGINE_MESSAGES } from "./json-references";
+import {
+  CROSS_ENGINE_CASES,
+  CROSS_ENGINE_VERSIONS,
+  ENGINE_MESSAGES,
+  TRUNCATION_CASES,
+} from "./json-references";
 
 /**
  * The cross-engine table is quoted verbatim on a guide page, so the same two
@@ -91,6 +96,41 @@ describe("engine messages are verbatim", () => {
   it("explains every row", () => {
     for (const row of ENGINE_MESSAGES) {
       expect(row.note.length).toBeGreaterThan(20);
+    }
+  });
+});
+
+/**
+ * The truncation table makes a claim that is easy to get wrong by hand: that
+ * four of these six equally-truncated inputs do *not* produce "Unexpected end
+ * of JSON input". Re-running the column is the only way to keep that true.
+ */
+describe("truncation cases are verbatim on V8", () => {
+  it("reproduces the Node column exactly", () => {
+    for (const row of TRUNCATION_CASES) {
+      let actual: string | null = null;
+      try {
+        JSON.parse(row.input);
+      } catch (error) {
+        actual = (error as Error).message;
+      }
+      expect(actual, `input ${JSON.stringify(row.input)} was accepted`).not.toBeNull();
+      expect(actual).toBe(row.node);
+    }
+  });
+
+  it("only uses the headline message where V8 really produces it", () => {
+    const withEndOfInput = TRUNCATION_CASES.filter(
+      (row) => row.node === "Unexpected end of JSON input",
+    );
+    expect(withEndOfInput.length).toBeLessThan(TRUNCATION_CASES.length);
+    expect(withEndOfInput.length).toBeGreaterThan(0);
+  });
+
+  it("names every engine that contributed a column", () => {
+    for (const row of TRUNCATION_CASES) {
+      expect(row.scenario.length).toBeGreaterThan(8);
+      expect(Object.values(CROSS_ENGINE_VERSIONS).length).toBe(3);
     }
   });
 });

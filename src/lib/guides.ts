@@ -114,6 +114,22 @@ export const GUIDES: GuideDefinition[] = [
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
   },
   {
+    slug: "json-unexpected-end-of-json-input",
+    href: "/guides/json-unexpected-end-of-json-input",
+    title: "Unexpected end of JSON input: what it means",
+    shortTitle: "End of input",
+    description:
+      "Six truncated inputs, three engines: only three produce this message. What the parser state tells you, and why an empty response body is the usual cause.",
+    summary:
+      "The message describes the parser's state, not the document. Three other kinds of truncation produce completely different sentences, and the most common real cause is a body of length zero rather than missing bytes.",
+    lede:
+      "This error fires when the input ends at a point where a value was still due. Everything else people assume about it — that the JSON was cut off, that bytes are missing from the end — describes only three of six truncations, and none of the cases that actually get reported.",
+    publishedAt: "2026-11-02",
+    readingMinutes: 8,
+    topic: "Errors",
+    relatedTool: { href: "/json-validator", name: "JSON Validator" },
+  },
+  {
     slug: "how-to-compare-two-json-files",
     href: "/guides/how-to-compare-two-json-files",
     title: "Compare two JSON files, ignoring key order",

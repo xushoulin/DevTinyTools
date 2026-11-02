@@ -101,6 +101,7 @@ describe("GUIDES registry", () => {
       "why-json-numbers-lose-precision",
       "json-minify-vs-gzip",
       "json-unexpected-token-at-position-0",
+      "json-unexpected-end-of-json-input",
       "how-to-compare-two-json-files",
       "json5-trailing-commas-and-comments",
     ];
