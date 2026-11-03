@@ -23,6 +23,7 @@ Current tools:
 | `/guides/how-to-compare-two-json-files` | Comparing two documents |
 | `/guides/json5-trailing-commas-and-comments` | JSON5 and JSONC syntax |
 | `/guides/json-unexpected-end-of-json-input` | Truncation vs a missing value |
+| `/guides/json-decode-error` | JSONDecodeError, message by message |
 | `/about`          | About the site              |
 | `/contact`        | Contact information         |
 | `/privacy-policy` | Privacy policy              |
@@ -45,7 +46,7 @@ npm install        # install dependencies
 npm run dev        # dev server on http://localhost:3000
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run test       # Vitest (173 unit tests)
+npm run test       # Vitest (182 unit tests)
 npm run build      # production build
 npm run indexnow   # push sitemap URLs to IndexNow (Bing, Yandex, Seznam)
 npm run check      # lint + typecheck + test + build
@@ -102,6 +103,7 @@ src/
     tools.ts               tool registry (nav, cards, sitemap)
     guides.ts              guide registry (nav, cards, sitemap)
     json-references.ts     measured parser messages, round-trip cases, sizes
+    python-decode.ts       JSONDecodeError text measured across four CPython releases
     ads.ts                 AdSense loader + ads.txt configuration
     analytics.ts           GA4 tag, Consent Mode defaults and id validation
     clipboard.ts           clipboard helper with fallback

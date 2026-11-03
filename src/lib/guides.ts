@@ -130,6 +130,22 @@ export const GUIDES: GuideDefinition[] = [
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
   },
   {
+    slug: "json-decode-error",
+    href: "/guides/json-decode-error",
+    title: "JSON decode error: what each message means",
+    shortTitle: "JSONDecodeError",
+    description:
+      "Every JSONDecodeError message measured on CPython 3.13, why four different problems all report char 0, and the one message that changed in 3.13.",
+    summary:
+      "Four unrelated problems collapse into one position-zero message, while V8 names the offending character in each case. The trailing comma wording also changed in 3.13, column included.",
+    lede:
+      "Python reports this error for an empty body, for a web page, and for a document that is correct except for one comma — and the sentence is identical all three times. What separates them is the first byte, not the wording.",
+    publishedAt: "2026-11-03",
+    readingMinutes: 9,
+    topic: "Errors",
+    relatedTool: { href: "/json-validator", name: "JSON Validator" },
+  },
+  {
     slug: "how-to-compare-two-json-files",
     href: "/guides/how-to-compare-two-json-files",
     title: "Compare two JSON files, ignoring key order",
