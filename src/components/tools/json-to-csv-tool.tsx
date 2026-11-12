@@ -16,6 +16,7 @@ import {
   type CsvDelimiter,
   type CsvSuccess,
 } from "@/lib/csv";
+import { useProUnlocked } from "@/lib/license";
 import {
   CSV_FREE_CHAR_LIMIT,
   CSV_PRO_CHAR_LIMIT,
@@ -39,7 +40,13 @@ export function JsonToCsvTool() {
   const [includeHeader, setIncludeHeader] = useState(true);
 
   const checkoutUrl = getProCheckoutUrl();
-  const limit = checkoutUrl ? CSV_FREE_CHAR_LIMIT : CSV_PRO_CHAR_LIMIT;
+  // Hydration-safe: the server snapshot is unlicensed; the client reads
+  // localStorage after mount.
+  const proActive = useProUnlocked();
+  // No checkout yet = everything is open (free cap is the Pro cap);
+  // with checkout live, Pro unlocks the higher cap again.
+  const limit =
+    !checkoutUrl || proActive ? CSV_PRO_CHAR_LIMIT : CSV_FREE_CHAR_LIMIT;
   const overLimit = input.length > limit;
 
   // Converting a million characters on every keystroke would freeze the tab;

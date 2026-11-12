@@ -4,6 +4,7 @@ import { ContentSection, ProseList } from "@/components/content-section";
 import { FaqSection } from "@/components/faq-section";
 import { JsonLd } from "@/components/json-ld";
 import { RelatedTools } from "@/components/related-tools";
+import { LicenseDialog } from "@/components/license-dialog";
 import { ToolPageHeader } from "@/components/tool-page-header";
 import { JsonDiffTool } from "@/components/tools/json-diff-tool";
 import { pageMetadata } from "@/lib/metadata";
@@ -299,6 +300,7 @@ export default function JsonDiffPage() {
               </Link>{" "}
               and you will get the first-month discount when it does.
             </p>
+            <LicenseDialog />
           </ContentSection>
 
           <FaqSection items={FAQ} path={PATH} />

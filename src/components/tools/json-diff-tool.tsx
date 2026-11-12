@@ -18,6 +18,7 @@ import {
 } from "@/lib/json-diff";
 import { buildDiffReport } from "@/lib/diff-report";
 import { formatCount, parseJson, type JsonErrorInfo } from "@/lib/json-utils";
+import { useProUnlocked } from "@/lib/license";
 import { DIFF_FREE_CHAR_LIMIT, DIFF_PRO_CHAR_LIMIT, getProCheckoutUrl } from "@/lib/pro";
 
 interface SideErrors {
@@ -64,8 +65,13 @@ export function JsonDiffTool() {
   const [status, setStatus] = useState<Status | null>(null);
 
   const checkoutUrl = getProCheckoutUrl();
-  // Before checkout exists, every capability is open: the free cap is the Pro cap.
-  const limit = checkoutUrl ? DIFF_FREE_CHAR_LIMIT : DIFF_PRO_CHAR_LIMIT;
+  // Hydration-safe: the server snapshot is unlicensed; the client reads
+  // localStorage after mount.
+  const proActive = useProUnlocked();
+  // Before checkout exists, every capability is open: the free cap is the Pro
+  // cap. With checkout live, an activated license restores the higher cap.
+  const limit =
+    !checkoutUrl || proActive ? DIFF_PRO_CHAR_LIMIT : DIFF_FREE_CHAR_LIMIT;
 
   /** Parses both sides and stores the outcome. Reports why a comparison did not run. */
   function compute(
