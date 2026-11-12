@@ -41,6 +41,7 @@ export const GUIDE_TOPICS = [
   "Payload size",
   "Diffing",
   "Syntax",
+  "Converting",
 ] as const;
 
 export type GuideTopic = (typeof GUIDE_TOPICS)[number];
@@ -176,6 +177,22 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 8,
     topic: "Syntax",
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
+  },
+  {
+    slug: "convert-json-to-csv",
+    href: "/guides/convert-json-to-csv",
+    title: "Converting JSON to CSV: what breaks on the way",
+    shortTitle: "JSON to CSV",
+    description:
+      "CSV has no types and no nesting. The IDs Excel silently rounds, the leading zeros it eats, and the quoting rules a naive converter misses.",
+    summary:
+      "A conversion that opens fine can still be wrong: 19-digit IDs rounded by Excel, ZIP codes losing their leading zero, nested objects flattened past recognition. Each failure has a specific cause and a specific fix.",
+    lede:
+      "JSON and CSV look interchangeable because both are text, but they model data completely differently: one has types and nesting, the other has neither. Most conversion bugs are not converter bugs at all — they are the two formats disagreeing about what a value is.",
+    publishedAt: "2026-11-12",
+    readingMinutes: 8,
+    topic: "Converting",
+    relatedTool: { href: "/json-to-csv", name: "JSON to CSV" },
   },
 ];
 

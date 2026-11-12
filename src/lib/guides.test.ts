@@ -105,6 +105,7 @@ describe("GUIDES registry", () => {
       "json-decode-error",
       "how-to-compare-two-json-files",
       "json5-trailing-commas-and-comments",
+      "convert-json-to-csv",
     ];
 
     expect(GUIDES.map((guide) => guide.slug)).toEqual(expected);
