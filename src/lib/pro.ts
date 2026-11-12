@@ -1,0 +1,37 @@
+/**
+ * DevTinyTools Pro configuration.
+ *
+ * The Pro tier lifts per-document limits on conversion tools. Everything
+ * stays client-side; a purchase is a licence key, not an account, so the
+ * "no sign-up" principle holds.
+ *
+ * Checkout is Lemon Squeezy (merchant of record — they remit VAT/sales tax on
+ * our behalf). The checkout URL is a build-time env var so no secrets or
+ * store-specific code live in the repo:
+ *
+ *   NEXT_PUBLIC_PRO_CHECKOUT_URL=https://xxxx.lemonsqueezy.com/buy/xxxx
+ *
+ * When the variable is unset the UI renders an honest "coming soon" state
+ * instead of a dead link, and the free limits still apply.
+ */
+
+/** Free-tier cap per document, in characters (roughly 1 MB of JSON). */
+export const CSV_FREE_CHAR_LIMIT = 1_000_000;
+
+/** Pro-tier cap per document, in characters (roughly 10 MB of JSON). */
+export const CSV_PRO_CHAR_LIMIT = 10_000_000;
+
+export const PRO_PRICE_MONTHLY = "$9";
+export const PRO_PRICE_LIFETIME = "$29";
+
+/** Normalised checkout URL, or null when Pro is not wired up yet. */
+export function getProCheckoutUrl(): string | null {
+  const raw = (process.env.NEXT_PUBLIC_PRO_CHECKOUT_URL ?? "").trim();
+  if (!raw) return null;
+  try {
+    const parsed = new URL(raw);
+    return parsed.protocol === "https:" ? parsed.toString() : null;
+  } catch {
+    return null;
+  }
+}

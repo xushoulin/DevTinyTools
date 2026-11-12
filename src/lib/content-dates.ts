@@ -24,4 +24,5 @@ export const TOOL_PAGE_DATES: Record<string, string> = {
   "/json-minifier": "2026-10-22",
   "/json-diff": "2026-10-29",
   "/json-escape": "2026-11-02",
+  "/json-to-csv": "2026-11-12",
 };

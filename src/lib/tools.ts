@@ -66,14 +66,19 @@ export const TOOLS: ToolDefinition[] = [
       "Escape text for a JSON string or unescape \\u00e9, \\n and \\\" back to plain text. Flags sequences that are not valid JSON. Runs in your browser.",
     category: "JSON",
   },
-];
-
-export const PLANNED_TOOLS = [
   {
+    href: "/json-to-csv",
     name: "JSON to CSV",
-    summary: "Turn an array of JSON objects into a CSV file you can open in a spreadsheet.",
+    heading: "JSON to CSV Converter",
+    summary:
+      "Turn an array of JSON objects into a CSV file you can open in a spreadsheet.",
+    description:
+      "Convert JSON to CSV online. Nested objects flatten into dotted columns, values are escaped per RFC 4180, and the result downloads ready for Excel. Runs in your browser.",
+    category: "JSON",
   },
 ];
+
+export const PLANNED_TOOLS: Array<{ name: string; summary: string }> = [];
 
 export const TOOL_CATEGORIES: Array<{
   name: ToolCategory;

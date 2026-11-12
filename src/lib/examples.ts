@@ -133,3 +133,47 @@ Emoji: 😀`;
 
 /** An escaped string, including one sequence JSON does not define. */
 export const UNESCAPE_EXAMPLE = `"Line one\\nLine two\\tindented \\u00e9 \\u2615 \\x41 done"`;
+
+/**
+ * An orders array for the CSV converter: three records whose nested customers
+ * flatten into dotted columns, one empty items array (serialised as `[]`) and
+ * a price written as a string, so the output shows the real-world wrinkles.
+ */
+export const CSV_EXAMPLE = `[
+  {
+    "id": "ORD-1001",
+    "status": "shipped",
+    "total": 129.5,
+    "currency": "USD",
+    "customer": {
+      "id": "CUS-88",
+      "email": "buyer@example.com"
+    },
+    "items": [
+      { "sku": "KB-01", "quantity": 1, "price": 99.5 },
+      { "sku": "CBL-03", "quantity": 2, "price": 15 }
+    ]
+  },
+  {
+    "id": "ORD-1002",
+    "status": "pending",
+    "total": 42,
+    "currency": "USD",
+    "customer": {
+      "id": "CUS-91",
+      "email": "another@example.com"
+    },
+    "items": []
+  },
+  {
+    "id": "ORD-1003",
+    "status": "cancelled",
+    "total": 0,
+    "currency": "USD",
+    "customer": {
+      "id": "CUS-95",
+      "email": "third@example.com"
+    },
+    "items": []
+  }
+]`;

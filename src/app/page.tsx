@@ -111,9 +111,10 @@ export default function HomePage() {
                 Tools
               </h2>
               <p className="mt-1.5 max-w-2xl text-sm text-slate-600">
-                Four JSON tools covering the tasks that come up most often: reading a
+                Five JSON tools covering the tasks that come up most often: reading a
                 minified payload, checking why a document is rejected, shrinking it before
-                shipping, and seeing exactly what changed between two versions.
+                shipping, seeing exactly what changed between two versions, and turning a
+                JSON array into a spreadsheet-ready CSV.
               </p>
             </div>
             <span className="rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-500">
@@ -238,31 +239,33 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section aria-labelledby="planned-heading" className="mt-12">
-          <h2
-            id="planned-heading"
-            className="text-xl font-semibold tracking-tight text-slate-900"
-          >
-            Planned
-          </h2>
-          <p className="mt-1.5 max-w-2xl text-sm text-slate-600">
-            These tools are not built yet. They are listed here so it is clear what this
-            site is working towards — there are no placeholder pages behind them.
-          </p>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {PLANNED_TOOLS.map((tool) => (
-              <li
-                key={tool.name}
-                className="rounded-lg border border-dashed border-slate-300 bg-white/60 p-4"
-              >
-                <h3 className="text-sm font-semibold text-slate-800">{tool.name}</h3>
-                <p className="mt-1 text-[13px] leading-relaxed text-slate-500">
-                  {tool.summary}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {PLANNED_TOOLS.length > 0 ? (
+          <section aria-labelledby="planned-heading" className="mt-12">
+            <h2
+              id="planned-heading"
+              className="text-xl font-semibold tracking-tight text-slate-900"
+            >
+              Planned
+            </h2>
+            <p className="mt-1.5 max-w-2xl text-sm text-slate-600">
+              These tools are not built yet. They are listed here so it is clear what this
+              site is working towards — there are no placeholder pages behind them.
+            </p>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {PLANNED_TOOLS.map((tool) => (
+                <li
+                  key={tool.name}
+                  className="rounded-lg border border-dashed border-slate-300 bg-white/60 p-4"
+                >
+                  <h3 className="text-sm font-semibold text-slate-800">{tool.name}</h3>
+                  <p className="mt-1 text-[13px] leading-relaxed text-slate-500">
+                    {tool.summary}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section aria-labelledby="about-heading" className="mt-12">
           <h2
