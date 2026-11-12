@@ -21,6 +21,12 @@ export const CSV_FREE_CHAR_LIMIT = 1_000_000;
 /** Pro-tier cap per document, in characters (roughly 10 MB of JSON). */
 export const CSV_PRO_CHAR_LIMIT = 10_000_000;
 
+/** Free-tier cap per diff side, in characters — the same as the global default. */
+export const DIFF_FREE_CHAR_LIMIT = 2_000_000;
+
+/** Pro-tier cap per diff side, in characters (roughly 10 MB of JSON). */
+export const DIFF_PRO_CHAR_LIMIT = 10_000_000;
+
 export const PRO_PRICE_MONTHLY = "$9";
 export const PRO_PRICE_LIFETIME = "$29";
 

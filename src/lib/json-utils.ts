@@ -619,12 +619,16 @@ export function offsetFromLineColumn(
 /* Parse / transform                                                           */
 /* -------------------------------------------------------------------------- */
 
-export function parseJson(text: string): ParseOutcome {
+export function parseJson(
+  text: string,
+  options: { maxChars?: number } = {},
+): ParseOutcome {
   if (!text.trim()) {
     return { ok: false, error: emptyInputError() };
   }
 
-  if (text.length > MAX_INPUT_CHARS) {
+  const maxChars = options.maxChars ?? MAX_INPUT_CHARS;
+  if (text.length > maxChars) {
     return { ok: false, error: tooLargeError(text.length) };
   }
 

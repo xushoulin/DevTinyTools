@@ -8,7 +8,8 @@ import { ToolPageHeader } from "@/components/tool-page-header";
 import { JsonDiffTool } from "@/components/tools/json-diff-tool";
 import { pageMetadata } from "@/lib/metadata";
 import { MAX_DIFF_ENTRIES } from "@/lib/json-diff";
-import { MAX_INPUT_CHARS, formatCount } from "@/lib/json-utils";
+import { formatCount } from "@/lib/json-utils";
+import { DIFF_FREE_CHAR_LIMIT, DIFF_PRO_CHAR_LIMIT, PRO_PRICE_LIFETIME, PRO_PRICE_MONTHLY, getProCheckoutUrl } from "@/lib/pro";
 import { absoluteUrl } from "@/lib/site";
 
 const PATH = "/json-diff";
@@ -19,6 +20,8 @@ export const metadata = pageMetadata({
     "Compare two JSON documents and see every added, removed and changed value with its exact path. Runs in your browser, with optional key and array order matching.",
   path: PATH,
 });
+
+const DIFF_LIMIT = getProCheckoutUrl() ? DIFF_FREE_CHAR_LIMIT : DIFF_PRO_CHAR_LIMIT;
 
 const FAQ = [
   {
@@ -43,7 +46,7 @@ const FAQ = [
   },
   {
     question: "How large can the two documents be?",
-    answer: `Each side is limited to ${formatCount(MAX_INPUT_CHARS)} characters. The comparison stops after ${formatCount(MAX_DIFF_ENTRIES)} differences and says so, because a list of ten thousand rows is not a report — narrow the documents down and compare a subtree instead.`,
+    answer: `Each side accepts up to ${formatCount(DIFF_LIMIT)} characters — open two files directly instead of pasting. The comparison stops after ${formatCount(MAX_DIFF_ENTRIES)} differences and says so, because a list of ten thousand rows is not a report — narrow the documents down and compare a subtree instead.`,
   },
 ];
 
@@ -72,9 +75,12 @@ export default function JsonDiffPage() {
             <ProseList
               items={[
                 <>
-                  Paste the original document on the left and the updated one on the right.
-                  Either side can be a minified or an indented payload; formatting makes no
-                  difference to the result.
+                  Paste the original document on the left and the updated one on the right — or
+                  press{" "}
+                  <strong className="font-medium text-slate-900">Open two files</strong> and pick
+                  both at once; the first lands on the left, the second on the right. Either way,
+                  a minified or an indented payload works; formatting makes no difference to the
+                  result.
                 </>,
                 <>
                   Press{" "}
@@ -84,6 +90,12 @@ export default function JsonDiffPage() {
                     $.items[1].quantity
                   </code>
                   .
+                </>,
+                <>
+                  To keep the result,{" "}
+                  <strong className="font-medium text-slate-900">Download report</strong> writes
+                  the change list to a plain-text file that reads cleanly in a terminal, an
+                  editor, or an attached ticket.
                 </>,
                 <>
                   Use{" "}
@@ -247,6 +259,45 @@ export default function JsonDiffPage() {
               is written to a cookie or to localStorage, and no analytics event carries the
               content — only the fact that a page was viewed, handled by the site-wide tag. If
               you open the network panel you will see no request containing your JSON.
+            </p>
+          </ContentSection>
+
+          <ContentSection id="pro" title="DevTinyTools Pro">
+            <p>
+              The free comparison covers the payloads most people paste by hand. Pro is for
+              the workflows that outgrow it — comparing two multi-megabyte API dumps, or a
+              pair of files a comfortable tab session would choke on:
+            </p>
+            <ProseList
+              items={[
+                <>
+                  <strong className="font-medium text-slate-900">
+                    {formatCount(DIFF_PRO_CHAR_LIMIT)} characters per side
+                  </strong>{" "}
+                  (the free cap is {formatCount(DIFF_FREE_CHAR_LIMIT)}) — roughly 10 MB of JSON
+                  per document.
+                </>,
+                <>
+                  <strong className="font-medium text-slate-900">Everything the diff does.</strong>{" "}
+                  File comparison and report export are free features; Pro lifts the size cap
+                  across the whole toolset, not just this page.
+                </>,
+                <>
+                  <strong className="font-medium text-slate-900">One pass for every tool.</strong>{" "}
+                  The converter, the minifier and the validator share the same Pro Pass — no
+                  per-tool upgrades.
+                </>,
+              ]}
+            />
+            <p>
+              Pricing is {PRO_PRICE_MONTHLY}/month or {PRO_PRICE_LIFETIME} one-time, sold
+              through Lemon Squeezy as merchant of record, so VAT and sales tax are
+              handled for you. Pro is a licence key — there is still no account. Checkout
+              is opening soon;{" "}
+              <Link href="/contact" className="text-blue-700 underline underline-offset-2">
+                email us
+              </Link>{" "}
+              and you will get the first-month discount when it does.
             </p>
           </ContentSection>
 

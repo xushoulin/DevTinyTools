@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { JsonTextArea } from "@/components/ui/json-textarea";
+import { Notice } from "@/components/ui/notice";
 import { buttonClass } from "@/components/ui/button";
+import { copyText } from "@/lib/clipboard";
+import { downloadTextFile, timestampedFilename } from "@/lib/download";
 import { DIFF_AFTER_EXAMPLE, DIFF_BEFORE_EXAMPLE } from "@/lib/examples";
 import {
   DEFAULT_DIFF_OPTIONS,
@@ -13,11 +16,20 @@ import {
   diffJson,
   previewValue,
 } from "@/lib/json-diff";
+import { buildDiffReport } from "@/lib/diff-report";
 import { formatCount, parseJson, type JsonErrorInfo } from "@/lib/json-utils";
+import { DIFF_FREE_CHAR_LIMIT, DIFF_PRO_CHAR_LIMIT, getProCheckoutUrl } from "@/lib/pro";
 
 interface SideErrors {
   before?: string;
   after?: string;
+}
+
+interface Status {
+  tone: "success" | "error" | "info";
+  title: string;
+  detail?: string;
+  showUpgrade?: boolean;
 }
 
 const BADGE: Record<DiffChangeType, string> = {
@@ -49,11 +61,35 @@ export function JsonDiffTool() {
   const [result, setResult] = useState<DiffResult | null>(null);
   const [errors, setErrors] = useState<SideErrors>({});
   const [message, setMessage] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status | null>(null);
 
-  /** Parses both sides and stores the outcome. Returns false if either is invalid. */
-  function compute(beforeText: string, afterText: string, opts: DiffOptions): boolean {
-    const parsedBefore = parseJson(beforeText);
-    const parsedAfter = parseJson(afterText);
+  const checkoutUrl = getProCheckoutUrl();
+  // Before checkout exists, every capability is open: the free cap is the Pro cap.
+  const limit = checkoutUrl ? DIFF_FREE_CHAR_LIMIT : DIFF_PRO_CHAR_LIMIT;
+
+  /** Parses both sides and stores the outcome. Reports why a comparison did not run. */
+  function compute(
+    beforeText: string,
+    afterText: string,
+    opts: DiffOptions,
+  ): "ok" | "overLimit" | "invalid" {
+    if (beforeText.length > limit || afterText.length > limit) {
+      setErrors({});
+      setResult(null);
+      setStatus({
+        tone: "info",
+        title: `One side is larger than ${formatCount(limit)} characters`,
+        detail:
+          checkoutUrl
+            ? `The free comparison covers up to ${formatCount(DIFF_FREE_CHAR_LIMIT)} characters per side. DevTinyTools Pro raises the cap to ${formatCount(DIFF_PRO_CHAR_LIMIT)}.`
+            : `The browser comparison covers up to ${formatCount(limit)} characters per side. A Pro tier that raises the cap further is launching soon.`,
+        showUpgrade: Boolean(checkoutUrl),
+      });
+      return "overLimit";
+    }
+
+    const parsedBefore = parseJson(beforeText, { maxChars: limit });
+    const parsedAfter = parseJson(afterText, { maxChars: limit });
 
     const nextErrors: SideErrors = {};
     if (!parsedBefore.ok) nextErrors.before = errorText(parsedBefore.error);
@@ -62,18 +98,20 @@ export function JsonDiffTool() {
     if (!parsedBefore.ok || !parsedAfter.ok) {
       setErrors(nextErrors);
       setResult(null);
-      return false;
+      return "invalid";
     }
 
     setErrors({});
     setResult(diffJson(parsedBefore.value, parsedAfter.value, opts));
-    return true;
+    return "ok";
   }
 
   function handleCompare() {
     setMessage(null);
-    const ok = compute(before, after, options);
-    if (!ok) setMessage("Both sides have to be valid JSON before they can be compared.");
+    setStatus(null);
+    if (compute(before, after, options) === "invalid") {
+      setMessage("Both sides have to be valid JSON before they can be compared.");
+    }
   }
 
   function handleExample() {
@@ -100,6 +138,93 @@ export function JsonDiffTool() {
     setResult(null);
     setErrors({});
     setMessage(null);
+    setStatus(null);
+  }
+
+  /** Reads up to two local files — first becomes Original, second becomes Updated. */
+  function handleOpenFiles(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []).slice(0, 2);
+    event.target.value = "";
+    setMessage(null);
+    setStatus(null);
+
+    if (files.length === 0) return;
+
+    if (files.some((file) => file.size > limit)) {
+      setStatus({
+        tone: "info",
+        title: "One of the files is larger than the comparison cap",
+        detail:
+          checkoutUrl
+            ? `The free comparison covers up to ${formatCount(DIFF_FREE_CHAR_LIMIT)} characters per side. DevTinyTools Pro raises the cap to ${formatCount(DIFF_PRO_CHAR_LIMIT)}.`
+            : `The browser comparison covers up to ${formatCount(limit)} characters per side. A Pro tier that raises the cap further is launching soon.`,
+        showUpgrade: Boolean(checkoutUrl),
+      });
+      return;
+    }
+
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () =>
+              resolve(typeof reader.result === "string" ? reader.result : "");
+            reader.onerror = () => reject(new Error(file.name));
+            reader.readAsText(file);
+          }),
+      ),
+    )
+      .then((texts) => {
+        const [first, second] = texts;
+        setBefore(first);
+        setAfter(second ?? "");
+        setResult(null);
+        setErrors({});
+        setStatus({
+          tone: "info",
+          title:
+            files.length === 2
+              ? `${files[0].name} vs ${files[1].name} loaded`
+              : `${files[0].name} loaded on the left`,
+          detail:
+            files.length === 2
+              ? `${formatCount(first.length)} and ${formatCount(second.length)} characters read locally — press Compare JSON.`
+              : "Open a second file (or paste one) to run the comparison. Nothing was uploaded.",
+        });
+      })
+      .catch((name: string) => {
+        setStatus({
+          tone: "error",
+          title: "A file could not be read",
+          detail: `${name} was refused by the browser. Paste the JSON text instead.`,
+        });
+      });
+  }
+
+  function handleDownloadReport() {
+    if (result === null) {
+      setStatus({ tone: "error", title: "Nothing to export", detail: "Run a comparison first." });
+      return;
+    }
+
+    const download = downloadTextFile(
+      buildDiffReport(result),
+      timestampedFilename("json-diff-report"),
+    );
+    setStatus(
+      download.ok
+        ? {
+            tone: "success",
+            title: "Report download started",
+            detail: `Saved as ${download.filename}.`,
+          }
+        : {
+            tone: "error",
+            title: "Download failed",
+            detail: "Your browser blocked the download. Copy the rows into a text file instead.",
+          },
+    );
   }
 
   function handleOptionChange(next: DiffOptions) {
@@ -125,6 +250,16 @@ export function JsonDiffTool() {
             <button type="button" onClick={handleSwap} className={buttonClass("ghost")}>
               Swap sides
             </button>
+            <label className={buttonClass("secondary")}>
+              Open two files
+              <input
+                type="file"
+                accept=".json,application/json,text/plain"
+                multiple
+                onChange={handleOpenFiles}
+                className="sr-only"
+              />
+            </label>
             <button type="button" onClick={handleClear} className={buttonClass("ghost")}>
               Clear
             </button>
@@ -192,6 +327,24 @@ export function JsonDiffTool() {
       <div aria-live="polite" className="space-y-3">
         {message ? <p className="text-xs text-slate-500">{message}</p> : null}
 
+        {status ? (
+          <Notice tone={status.tone} title={status.title}>
+            {status.detail ? <p>{status.detail}</p> : null}
+            {status.showUpgrade && checkoutUrl ? (
+              <p className="mt-2">
+                <a
+                  href={checkoutUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonClass("primary")}
+                >
+                  Upgrade to Pro
+                </a>
+              </p>
+            ) : null}
+          </Notice>
+        ) : null}
+
         {result === null ? (
           <div className="rounded-md border border-dashed border-slate-300 bg-white/60 px-4 py-6 text-center text-sm text-slate-500">
             No comparison yet. Paste two documents and press{" "}
@@ -217,6 +370,13 @@ export function JsonDiffTool() {
               {result.counts.reordered > 0 ? (
                 <Count label="reordered" value={result.counts.reordered} />
               ) : null}
+              <button
+                type="button"
+                onClick={handleDownloadReport}
+                className="ml-auto rounded border border-slate-300 bg-white px-2 py-0.5 text-[11px] text-slate-600 hover:bg-slate-100"
+              >
+                Download report
+              </button>
             </div>
 
             {result.total === 0 ? (
