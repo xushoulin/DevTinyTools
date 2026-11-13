@@ -11,7 +11,8 @@ import { downloadTextFile } from "@/lib/download";
 import { TYPES_EXAMPLE } from "@/lib/examples";
 import { formatCount, parseJson, type JsonErrorInfo } from "@/lib/json-utils";
 import { inferType, type InferredType } from "@/lib/type-infer";
-import { emitTypeScript, emitZod, type EmitTarget } from "@/lib/type-emit";
+import { emitTypeScript, emitZod } from "@/lib/type-emit";
+import { emitJsonSchema } from "@/lib/schema-emit";
 import { useProUnlocked } from "@/lib/license";
 import {
   TYPE_FREE_CHAR_LIMIT,
@@ -25,9 +26,20 @@ interface Status {
   detail?: string;
 }
 
-const TARGET_LABELS: Record<EmitTarget, string> = {
+const TARGETS = ["typescript", "zod", "json-schema"] as const;
+
+type Target = (typeof TARGETS)[number];
+
+const TARGET_LABELS: Record<Target, string> = {
   typescript: "TypeScript interfaces",
   zod: "Zod schema",
+  "json-schema": "JSON Schema",
+};
+
+const TARGET_SUFFIX: Record<Target, string> = {
+  typescript: ".ts",
+  zod: ".schema.ts",
+  "json-schema": ".schema.json",
 };
 
 export function JsonToTypeScriptTool() {
@@ -35,7 +47,7 @@ export function JsonToTypeScriptTool() {
   const [inferred, setInferred] = useState<InferredType | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
   const [error, setError] = useState<JsonErrorInfo | null>(null);
-  const [target, setTarget] = useState<EmitTarget>("typescript");
+  const [target, setTarget] = useState<Target>("typescript");
   const [rootName, setRootName] = useState("Root");
   const [indent, setIndent] = useState<2 | 4>(2);
 
@@ -48,10 +60,13 @@ export function JsonToTypeScriptTool() {
 
   const limit = proAvailable ? TYPE_PRO_CHAR_LIMIT : TYPE_FREE_CHAR_LIMIT;
   const overLimit = input.length > limit;
-  const lockedTarget = target === "zod" && !proAvailable;
+  const lockedTarget = target !== "typescript" && !proAvailable;
 
   const result = useMemo(() => {
     if (!inferred || lockedTarget) return null;
+    if (target === "json-schema") {
+      return emitJsonSchema(inferred, { rootName, indent });
+    }
     const options = { rootName, indent };
     return target === "zod" ? emitZod(inferred, options) : emitTypeScript(inferred, options);
   }, [inferred, target, rootName, indent, lockedTarget]);
@@ -139,15 +154,15 @@ export function JsonToTypeScriptTool() {
     }
 
     const base = rootName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-") || "types";
-    const suffix = target === "zod" ? ".schema.ts" : ".ts";
-    const download = downloadTextFile(output, `${base}${suffix}`);
+    const download = downloadTextFile(output, `${base}${TARGET_SUFFIX[target]}`);
     setStatus(
       download.ok
         ? { tone: "success", title: "Download started", detail: `Saved as ${download.filename}.` }
         : {
             tone: "error",
             title: "Download failed",
-            detail: "Your browser blocked the download. Copy the code into a .ts file instead.",
+            detail:
+              "Your browser blocked the download. Copy the output into a file of the right extension instead.",
           },
     );
   }
@@ -198,15 +213,15 @@ export function JsonToTypeScriptTool() {
     event.target.value = "";
   }
 
-  function handleTargetChange(next: EmitTarget) {
+  function handleTargetChange(next: Target) {
     setTarget(next);
     setStatus(
-      next === "zod" && !proAvailable
+      next !== "typescript" && !proAvailable
         ? {
             tone: "info",
-            title: "Zod output is a Pro feature",
+            title: "Schema output is a Pro feature",
             detail:
-              "TypeScript interfaces stay free. Pro adds schema output, a 10 MB limit and lifetime updates.",
+              "TypeScript interfaces stay free. Pro adds Zod and JSON Schema output, a 10 MB limit and lifetime updates.",
           }
         : null,
     );
@@ -240,7 +255,7 @@ export function JsonToTypeScriptTool() {
           <div className="flex items-center gap-2">
             <span className="text-slate-500">Output</span>
             <div className="flex overflow-hidden rounded border border-slate-300">
-              {(Object.keys(TARGET_LABELS) as EmitTarget[]).map((option) => (
+              {TARGETS.map((option) => (
                 <button
                   key={option}
                   type="button"
@@ -253,7 +268,7 @@ export function JsonToTypeScriptTool() {
                   }
                 >
                   {TARGET_LABELS[option]}
-                  {option === "zod" && !proAvailable ? (
+                  {option !== "typescript" && !proAvailable ? (
                     <span className="ml-1 rounded bg-amber-100 px-1 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
                       Pro
                     </span>
@@ -302,11 +317,11 @@ export function JsonToTypeScriptTool() {
 
         {lockedTarget ? (
           <div className="flex h-[300px] flex-col justify-center rounded-lg border border-amber-200 bg-amber-50 p-5 lg:h-[440px]">
-            <p className="text-sm font-semibold text-amber-900">Zod output is part of Pro</p>
+            <p className="text-sm font-semibold text-amber-900">Schema output is part of Pro</p>
             <p className="mt-2 text-[13px] leading-relaxed text-amber-900/90">
-              Generating TypeScript interfaces stays free. Pro adds the Zod schema output,
-              raises the document limit to {formatCount(TYPE_PRO_CHAR_LIMIT)} characters and
-              keeps the tool working for a lifetime licence.
+              Generating TypeScript interfaces stays free. Pro adds the Zod and JSON Schema
+              outputs, raises the document limit to {formatCount(TYPE_PRO_CHAR_LIMIT)} characters
+              and keeps the tool working for a lifetime licence.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {checkoutUrl ? (

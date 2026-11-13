@@ -14,20 +14,21 @@ import { absoluteUrl } from "@/lib/site";
 const PATH = "/json-to-typescript";
 
 export const metadata = pageMetadata({
-  title: "JSON to TypeScript & Zod Generator",
+  title: "JSON to TypeScript, Zod & Schema Generator",
   description:
-    "Generate TypeScript interfaces or a Zod schema from JSON. Every array element is sampled, so keys that only some records carry become optional.",
+    "Generate TypeScript interfaces, a Zod schema or a JSON Schema from JSON. Every array element is sampled, so keys only some records carry become optional.",
   path: PATH,
 });
 
 const PRO_FEATURES = [
   <>
-    <strong className="font-medium text-slate-900">Zod schema output</strong> — the same
-    inference, emitted as <code className="font-mono text-[12px]">z.object</code> calls with{" "}
-    <code className="font-mono text-[12px]">.optional()</code> and{" "}
-    <code className="font-mono text-[12px]">.nullable()</code> already applied, plus a{" "}
-    <code className="font-mono text-[12px]">z.infer</code> alias so runtime and compile-time
-    types cannot drift.
+    <strong className="font-medium text-slate-900">Zod and JSON Schema output</strong> — the
+    same inference, emitted as <code className="font-mono text-[12px]">z.object</code> calls
+    with <code className="font-mono text-[12px]">.optional()</code> and{" "}
+    <code className="font-mono text-[12px]">.nullable()</code> already applied, or as a draft
+    2020-12 JSON Schema with <code className="font-mono text-[12px]">$defs</code>,{" "}
+    <code className="font-mono text-[12px]">$ref</code> and a computed{" "}
+    <code className="font-mono text-[12px]">required</code> list.
   </>,
   <>
     <strong className="font-medium text-slate-900">
@@ -44,6 +45,11 @@ const PRO_FEATURES = [
 ];
 
 const FAQ = [
+  {
+    question: "What does the JSON Schema output include?",
+    answer:
+      "A draft 2020-12 document: the root object inlined at the top level, nested objects in $defs referenced with $ref, required computed from every sampled array element, additionalProperties set to false, and integer versus number chosen the same way the Go output picks int64 versus float64. Validate it with any draft 2020-12 checker such as Ajv.",
+  },
   {
     question: "Does it sample every array element or only the first?",
     answer:
@@ -96,8 +102,8 @@ export default function JsonToTypeScriptPage() {
             { label: "Tools", href: "/#tools" },
             { label: "JSON to TypeScript" },
           ]}
-          title="JSON to TypeScript & Zod Generator"
-          description="Paste a JSON response and get TypeScript interfaces that match it. Every array element is sampled, so properties that only some records carry come out optional instead of breaking the build."
+          title="JSON to TypeScript, Zod & Schema Generator"
+          description="Paste a JSON response and get TypeScript interfaces that match it. Every array element is sampled, so properties that only some records carry come out optional instead of breaking the build. Pro adds Zod and JSON Schema output."
         />
 
         <div className="mt-6">
@@ -119,8 +125,8 @@ export default function JsonToTypeScriptPage() {
                   body: "Root is the default. Rename it to ApiResponse, User or Invoice before you copy; nested types are named from it, so a profile object under User becomes UserProfile rather than a generic RootProfile.",
                 },
                 {
-                  title: "Choose interfaces or a Zod schema",
-                  body: "Interfaces are erased at compile time and cost nothing at runtime. The Zod schema is a runtime validator: it parses untrusted input and rejects it with a path to the offending field.",
+                  title: "Choose interfaces, Zod or JSON Schema",
+                  body: "Interfaces are erased at compile time and cost nothing at runtime. The Zod schema is a runtime validator; the JSON Schema is a language-neutral document any validator — Ajv, a CI gate, an API contract — can consume.",
                 },
                 {
                   title: "Press Generate, then copy or download",
@@ -285,13 +291,13 @@ export default function JsonToTypeScriptPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          name: "JSON to TypeScript & Zod Generator",
+          name: "JSON to TypeScript, Zod & Schema Generator",
           url: absoluteUrl(PATH),
           applicationCategory: "DeveloperApplication",
           operatingSystem: "Any",
           browserRequirements: "Requires JavaScript",
           description:
-            "Generate TypeScript interfaces or Zod schemas from a JSON sample. Every array element is sampled so optional properties and unions are inferred from the real data.",
+            "Generate TypeScript interfaces, Zod schemas or a draft 2020-12 JSON Schema from a JSON sample. Every array element is sampled so optional properties and unions are inferred from the real data.",
           offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
           isAccessibleForFree: true,
         }}
