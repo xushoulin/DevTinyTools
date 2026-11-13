@@ -253,3 +253,35 @@ export const CSV_TO_JSON_EXAMPLE = `id,customer.name,total,price_text,zip_code,n
 1001,"Ada Lovelace",129.5,19.50,02134,"Item: keyboard, USB"
 1002,Grace Hopper,42,,,"say ""hi"""
 1003,Katherine Johnson,7.25,7.25,02139,`;
+
+/**
+ * Example JSON for the Java POJO generator. Chosen to exercise the three Java
+ * decisions: snake_case keys (renamed + @JsonProperty), a key the second
+ * record omits (boxed type), and a key that is sometimes null (boxed Object).
+ */
+export const JAVA_EXAMPLE = `[
+  {
+    "order_id": 84126,
+    "coupon_code": "SUMMER10",
+    "total": 129.5,
+    "paid": true,
+    "customer": {
+      "display_name": "Ada Lovelace",
+      "email": "ada@example.com"
+    },
+    "items": [
+      { "sku": "KB-01", "quantity": 1, "unit_price": 99.5 }
+    ]
+  },
+  {
+    "order_id": 84127,
+    "coupon_code": null,
+    "total": 42,
+    "paid": false,
+    "customer": {
+      "display_name": "Grace Hopper",
+      "email": "grace@example.com"
+    },
+    "items": []
+  }
+]`;

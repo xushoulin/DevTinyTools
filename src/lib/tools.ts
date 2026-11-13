@@ -106,6 +106,16 @@ export const TOOLS: ToolDefinition[] = [
       "Convert CSV to JSON in the browser. Handles quoted commas and line breaks, detects the delimiter, unflattens dotted headers and never rewrites a number it cannot round-trip.",
     category: "JSON",
   },
+  {
+    href: "/json-to-java",
+    name: "JSON to Java",
+    heading: "JSON to Java POJO Generator",
+    summary:
+      "Generate Java classes from JSON: primitives for required values, boxed types for optional and nullable ones, @JsonProperty for renamed keys and nested static classes.",
+    description:
+      "Generate Java POJOs from JSON with primitives or boxed types chosen per field, @JsonProperty for snake_case keys and nested objects as static classes. Runs in your browser.",
+    category: "JSON",
+  },
 ];
 
 export const PLANNED_TOOLS: Array<{ name: string; summary: string }> = [];
