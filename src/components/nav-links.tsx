@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/json-minifier", label: "Minifier" },
   { href: "/json-diff", label: "Diff" },
   { href: "/json-to-csv", label: "CSV" },
+  { href: "/json-to-typescript", label: "TypeScript" },
   { href: "/guides", label: "Guides" },
 ] as const;
 

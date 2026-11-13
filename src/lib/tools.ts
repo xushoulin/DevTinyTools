@@ -76,6 +76,16 @@ export const TOOLS: ToolDefinition[] = [
       "Convert JSON to CSV online. Nested objects flatten into dotted columns, values are escaped per RFC 4180, and the result downloads ready for Excel. Runs in your browser.",
     category: "JSON",
   },
+  {
+    href: "/json-to-typescript",
+    name: "JSON to TypeScript",
+    heading: "JSON to TypeScript Generator",
+    summary:
+      "Generate TypeScript interfaces from a JSON sample, with optional properties and unions inferred from every array element.",
+    description:
+      "Generate TypeScript interfaces or a Zod schema from JSON. Every array element is sampled, so missing keys become optional. Runs in your browser.",
+    category: "JSON",
+  },
 ];
 
 export const PLANNED_TOOLS: Array<{ name: string; summary: string }> = [];

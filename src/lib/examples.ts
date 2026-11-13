@@ -177,3 +177,32 @@ export const CSV_EXAMPLE = `[
     "items": []
   }
 ]`;
+
+/**
+ * Two records that deliberately disagree: the second user has no avatarUrl and
+ * a null lastSeenAt. Generates optional properties and a string | null union,
+ * which is the whole point of the tool.
+ */
+export const TYPES_EXAMPLE = `[
+  {
+    "id": 1042,
+    "email": "ada@example.com",
+    "profile": {
+      "displayName": "Ada",
+      "avatarUrl": "https://cdn.example.com/ada.png"
+    },
+    "roles": ["admin", "editor"],
+    "lastSeenAt": "2026-11-01T09:30:00Z",
+    "creditBalance": 12.5
+  },
+  {
+    "id": 1043,
+    "email": "alan@example.com",
+    "profile": {
+      "displayName": "Alan"
+    },
+    "roles": ["viewer"],
+    "lastSeenAt": null,
+    "creditBalance": 0
+  }
+]`;

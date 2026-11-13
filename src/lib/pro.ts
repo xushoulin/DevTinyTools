@@ -27,6 +27,12 @@ export const DIFF_FREE_CHAR_LIMIT = 2_000_000;
 /** Pro-tier cap per diff side, in characters (roughly 10 MB of JSON). */
 export const DIFF_PRO_CHAR_LIMIT = 10_000_000;
 
+/** Free-tier cap for type generation, in characters (roughly 1 MB of JSON). */
+export const TYPE_FREE_CHAR_LIMIT = 1_000_000;
+
+/** Pro-tier cap for type generation, in characters (roughly 10 MB of JSON). */
+export const TYPE_PRO_CHAR_LIMIT = 10_000_000;
+
 export const PRO_PRICE_MONTHLY = "$9";
 export const PRO_PRICE_LIFETIME = "$29";
 
