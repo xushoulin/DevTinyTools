@@ -242,3 +242,14 @@ export const GO_EXAMPLE = `[
     "created_at": "2026-11-02T11:00:00Z"
   }
 ]`;
+
+/**
+ * Example CSV for the CSV-to-JSON tool. Deliberately exercises every parser
+ * rule the page explains: a comma inside quotes, doubled quotes, dotted
+ * header names, empty cells (null), and numbers whose text the exactness
+ * guard must keep as strings ("19.50", "02134").
+ */
+export const CSV_TO_JSON_EXAMPLE = `id,customer.name,total,price_text,zip_code,notes
+1001,"Ada Lovelace",129.5,19.50,02134,"Item: keyboard, USB"
+1002,Grace Hopper,42,,,"say ""hi"""
+1003,Katherine Johnson,7.25,7.25,02139,`;

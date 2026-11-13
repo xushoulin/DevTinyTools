@@ -96,6 +96,16 @@ export const TOOLS: ToolDefinition[] = [
       "Generate Go structs from JSON with json tags, int64 or float64 widths, pointers for null values and omitempty for optional keys. Runs in your browser.",
     category: "JSON",
   },
+  {
+    href: "/csv-to-json",
+    name: "CSV to JSON",
+    heading: "CSV to JSON Converter",
+    summary:
+      "Convert CSV to JSON with RFC 4180 parsing, delimiter detection, dotted headers unflattened into nested objects and numbers converted only when they round-trip exactly.",
+    description:
+      "Convert CSV to JSON in the browser. Handles quoted commas and line breaks, detects the delimiter, unflattens dotted headers and never rewrites a number it cannot round-trip.",
+    category: "JSON",
+  },
 ];
 
 export const PLANNED_TOOLS: Array<{ name: string; summary: string }> = [];
