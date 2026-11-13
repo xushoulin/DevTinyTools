@@ -1,4 +1,5 @@
 import { AdSlot } from "@/components/ad-slot";
+import Link from "next/link";
 import { ContentSection, ProseList, StepList } from "@/components/content-section";
 import { FaqSection } from "@/components/faq-section";
 import { JsonLd } from "@/components/json-ld";
@@ -183,6 +184,22 @@ export default function JsonToCsvPage() {
               because the comma is the decimal separator there. If your spreadsheet shows
               everything in one column, convert again with the semicolon delimiter — that
               is a locale setting, not a broken file.
+            </p>
+            <p>
+              The failure modes that do not announce themselves — 19-digit IDs Excel rounds,
+              ZIP codes that lose their leading zero, nested objects flattened past
+              recognition — are covered in{" "}
+              <Link
+                href="/guides/convert-json-to-csv"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                Converting JSON to CSV: what breaks on the way
+              </Link>
+              . Going the other direction,{" "}
+              <Link href="/csv-to-json" className="text-blue-700 underline underline-offset-2">
+                CSV to JSON
+              </Link>{" "}
+              reads the same quoting rules back in.
             </p>
           </ContentSection>
 

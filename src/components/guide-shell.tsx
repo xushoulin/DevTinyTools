@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { buttonClass } from "@/components/ui/button";
-import { formatGuideDate, otherGuides, type GuideDefinition } from "@/lib/guides";
+import { formatGuideDate, otherGuides, relatedGuides, type GuideDefinition } from "@/lib/guides";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
 interface GuideShellProps {
@@ -19,7 +19,13 @@ interface GuideShellProps {
  * cannot ship without it.
  */
 export function GuideShell({ guide, children }: GuideShellProps) {
-  const more = otherGuides(guide.slug);
+  const related = relatedGuides(guide);
+  // The curated links are rendered above, so repeating them in the generic list
+  // would just make the page longer without adding an edge.
+  const more = otherGuides(
+    guide.slug,
+    related.map((item) => item.slug),
+  ).slice(0, 6);
   const modified = guide.updatedAt ?? guide.publishedAt;
 
   return (
@@ -71,6 +77,34 @@ export function GuideShell({ guide, children }: GuideShellProps) {
             Open {guide.relatedTool.name}
           </Link>
         </aside>
+
+        {related.length > 0 ? (
+          <nav aria-label="Related reading" className="mt-10">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Related reading
+            </h2>
+            <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+              {related.map((item) => (
+                <li key={item.slug}>
+                  <Link
+                    href={item.href}
+                    className="group flex h-full flex-col rounded-lg border border-slate-200 bg-white p-4 transition-colors hover:border-slate-300"
+                  >
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-700">
+                      {item.topic}
+                    </span>
+                    <span className="mt-1 text-sm font-medium text-slate-900 group-hover:underline">
+                      {item.title}
+                    </span>
+                    <span className="mt-1.5 text-[13px] leading-relaxed text-slate-600">
+                      {item.summary}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
 
         <nav aria-label="More guides" className="mt-10 border-t border-slate-200 pt-6">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">

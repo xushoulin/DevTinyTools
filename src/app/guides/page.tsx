@@ -10,7 +10,7 @@ const PATH = "/guides";
 export const metadata = pageMetadata({
   title: "JSON Guides",
   description:
-    "Short, measured guides to JSON behaviour: parser errors, number precision, comparing two documents, JSON5 syntax and whether minifying saves bandwidth.",
+    "Measured guides to JSON behaviour: parser errors, number precision, diffs, JSON5 syntax, and converting JSON to CSV, TypeScript, Go, Java and C#.",
   path: PATH,
 });
 

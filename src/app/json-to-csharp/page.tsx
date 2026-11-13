@@ -222,6 +222,17 @@ export default function JsonToCsharpPage() {
               </Link>{" "}
               explains with the decimal argument.
             </p>
+            <p>
+              None of this is better than the sample it was inferred from: one record makes every
+              key look required. The reasoning is laid out in{" "}
+              <Link
+                href="/guides/generate-typescript-types-from-json"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                your sample is not a schema
+              </Link>
+              , and it holds for C# as much as for TypeScript.
+            </p>
           </ContentSection>
 
           <ContentSection id="pro" title="DevTinyTools Pro">

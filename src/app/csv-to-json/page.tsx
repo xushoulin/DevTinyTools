@@ -209,7 +209,15 @@ export default function CsvToJsonPage() {
             <p>
               The round trip is not universal — arrays inside rows travelled as JSON text in
               one cell, so they come back as strings. For flat-and-nested objects without
-              arrays, what goes in is what comes out, cell for cell.
+              arrays, what goes in is what comes out, cell for cell. The losses that survive
+              a spreadsheet — rounded IDs, eaten leading zeros — are collected in{" "}
+              <Link
+                href="/guides/convert-json-to-csv"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                Converting JSON to CSV: what breaks on the way
+              </Link>
+              .
             </p>
           </ContentSection>
 

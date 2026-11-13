@@ -7,6 +7,7 @@ import {
   formatGuideDate,
   getGuide,
   otherGuides,
+  relatedGuides,
 } from "./guides";
 import { TOOLS } from "./tools";
 
@@ -132,6 +133,62 @@ describe("otherGuides", () => {
 
     expect(rest).toHaveLength(GUIDES.length - 1);
     expect(rest.some((guide) => guide.slug === first.slug)).toBe(false);
+  });
+});
+
+describe("related guides", () => {
+  it("declares two or three curated cross-links per guide", () => {
+    for (const guide of GUIDES) {
+      expect(guide.related.length).toBeGreaterThanOrEqual(2);
+      expect(guide.related.length).toBeLessThanOrEqual(3);
+    }
+  });
+
+  it("points only at slugs that exist, and never at itself", () => {
+    const slugs = new Set(GUIDES.map((guide) => guide.slug));
+
+    for (const guide of GUIDES) {
+      for (const slug of guide.related) {
+        expect(slugs.has(slug)).toBe(true);
+        expect(slug).not.toBe(guide.slug);
+      }
+    }
+  });
+
+  it("never repeats a slug inside one list", () => {
+    for (const guide of GUIDES) {
+      expect(new Set(guide.related).size).toBe(guide.related.length);
+    }
+  });
+
+  it("resolves in the order they were declared", () => {
+    const guide = GUIDES[0];
+    const resolved = relatedGuides(guide);
+
+    expect(resolved).toHaveLength(guide.related.length);
+    expect(resolved.map((item) => item.slug)).toEqual(guide.related);
+  });
+
+  it("keeps every guide reachable from another guide, not only from the index", () => {
+    // A guide nobody links to is a page the crawler only finds through the
+    // sitemap. Inbound links are what make the cluster legible.
+    const inbound = new Set(GUIDES.flatMap((guide) => guide.related));
+
+    for (const guide of GUIDES) {
+      expect(inbound.has(guide.slug)).toBe(true);
+    }
+  });
+});
+
+describe("otherGuides with exclusions", () => {
+  it("drops the guides already listed as related reading", () => {
+    const guide = GUIDES[0];
+    const rest = otherGuides(guide.slug, guide.related);
+
+    expect(rest.some((item) => item.slug === guide.slug)).toBe(false);
+    for (const slug of guide.related) {
+      expect(rest.some((item) => item.slug === slug)).toBe(false);
+    }
   });
 });
 

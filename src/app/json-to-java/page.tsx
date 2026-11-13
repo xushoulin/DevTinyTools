@@ -220,6 +220,17 @@ export default function JsonToJavaPage() {
               would be worse than a comment explaining{" "}
               <code className="font-mono text-[12px]">List&lt;Order&gt;</code>.
             </p>
+            <p>
+              Every one of these decisions is only as good as the sample behind it: paste one
+              record and nothing looks optional. The argument is laid out in{" "}
+              <Link
+                href="/guides/generate-typescript-types-from-json"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                your sample is not a schema
+              </Link>
+              , and it applies to Java unchanged.
+            </p>
           </ContentSection>
 
           <ContentSection id="pro" title="DevTinyTools Pro">

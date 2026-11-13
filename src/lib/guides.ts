@@ -32,6 +32,13 @@ export interface GuideDefinition {
   topic: GuideTopic;
   /** The tool this guide is about, linked at the top and bottom. */
   relatedTool: { href: string; name: string };
+  /**
+   * Curated cross-links: two or three slugs that answer the next question a
+   * reader of this page actually has. Deliberately hand-picked rather than
+   * "everything else", because a flat list of links on every page tells search
+   * engines nothing about which pages belong together.
+   */
+  related: string[];
 }
 
 /** Every topic a guide may declare. Kept as data so the tests can assert on it. */
@@ -64,6 +71,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 8,
     topic: "Errors",
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
+    related: [
+      "json5-trailing-commas-and-comments",
+      "json-unexpected-token-at-position-0",
+      "json-unexpected-end-of-json-input",
+    ],
   },
   {
     slug: "why-json-numbers-lose-precision",
@@ -81,6 +93,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 9,
     topic: "Numbers",
     relatedTool: { href: "/json-formatter", name: "JSON Formatter" },
+    related: [
+      "how-to-compare-two-json-files",
+      "convert-json-to-go-struct",
+      "convert-json-to-csv",
+    ],
   },
   {
     slug: "json-minify-vs-gzip",
@@ -98,6 +115,10 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 7,
     topic: "Payload size",
     relatedTool: { href: "/json-minifier", name: "JSON Minifier" },
+    related: [
+      "how-to-compare-two-json-files",
+      "json-error-messages-explained",
+    ],
   },
   {
     slug: "json-unexpected-token-at-position-0",
@@ -114,6 +135,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 8,
     topic: "Errors",
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
+    related: [
+      "json-unexpected-end-of-json-input",
+      "json-decode-error",
+      "json5-trailing-commas-and-comments",
+    ],
   },
   {
     slug: "json-unexpected-end-of-json-input",
@@ -130,6 +156,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 8,
     topic: "Errors",
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
+    related: [
+      "json-unexpected-token-at-position-0",
+      "json-decode-error",
+      "json-error-messages-explained",
+    ],
   },
   {
     slug: "json-decode-error",
@@ -146,6 +177,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 9,
     topic: "Errors",
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
+    related: [
+      "json-unexpected-end-of-json-input",
+      "json-unexpected-token-at-position-0",
+      "json5-trailing-commas-and-comments",
+    ],
   },
   {
     slug: "how-to-compare-two-json-files",
@@ -162,6 +198,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 9,
     topic: "Diffing",
     relatedTool: { href: "/json-diff", name: "JSON Diff" },
+    related: [
+      "why-json-numbers-lose-precision",
+      "json-minify-vs-gzip",
+      "json5-trailing-commas-and-comments",
+    ],
   },
   {
     slug: "json5-trailing-commas-and-comments",
@@ -178,6 +219,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 8,
     topic: "Syntax",
     relatedTool: { href: "/json-validator", name: "JSON Validator" },
+    related: [
+      "json-error-messages-explained",
+      "json-unexpected-token-at-position-0",
+      "json-decode-error",
+    ],
   },
   {
     slug: "convert-json-to-csv",
@@ -194,6 +240,10 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 8,
     topic: "Converting",
     relatedTool: { href: "/json-to-csv", name: "JSON to CSV" },
+    related: [
+      "why-json-numbers-lose-precision",
+      "generate-typescript-types-from-json",
+    ],
   },
   {
     slug: "generate-typescript-types-from-json",
@@ -210,6 +260,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 9,
     topic: "Typing",
     relatedTool: { href: "/json-to-typescript", name: "JSON to TypeScript" },
+    related: [
+      "convert-json-to-go-struct",
+      "convert-json-to-csv",
+      "why-json-numbers-lose-precision",
+    ],
   },
   {
     slug: "convert-json-to-go-struct",
@@ -226,6 +281,11 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 9,
     topic: "Typing",
     relatedTool: { href: "/json-to-go", name: "JSON to Go" },
+    related: [
+      "generate-typescript-types-from-json",
+      "why-json-numbers-lose-precision",
+      "convert-json-to-csv",
+    ],
   },
 ];
 
@@ -234,8 +294,20 @@ export function getGuide(slug: string): GuideDefinition | undefined {
 }
 
 /** Guides other than the current one, for the "more guides" list. */
-export function otherGuides(slug: string): GuideDefinition[] {
-  return GUIDES.filter((guide) => guide.slug !== slug);
+export function otherGuides(slug: string, exclude: string[] = []): GuideDefinition[] {
+  const skip = new Set([slug, ...exclude]);
+  return GUIDES.filter((guide) => !skip.has(guide.slug));
+}
+
+/**
+ * Resolve a guide's curated cross-links, in the order they were declared.
+ * Slugs that do not resolve are dropped rather than rendered as dead links —
+ * the registry test asserts there are none.
+ */
+export function relatedGuides(guide: GuideDefinition): GuideDefinition[] {
+  return guide.related
+    .map((slug) => getGuide(slug))
+    .filter((item): item is GuideDefinition => item !== undefined);
 }
 
 /** "2026-10-22" → "October 22, 2026", without pulling in a date library. */

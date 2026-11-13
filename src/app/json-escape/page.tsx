@@ -310,6 +310,17 @@ export default function JsonEscapePage() {
               line, a queue message, a third-party export. If the tool says{" "}
               <em>repaired</em>, the fix belongs upstream, not in a bigger try/catch.
             </p>
+            <p>
+              The most common upstream cause is a document that is almost JSON: comments, trailing
+              commas, single quotes or unquoted keys, which a strict parser rejects.{" "}
+              <Link
+                href="/guides/json5-trailing-commas-and-comments"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                Trailing commas and comments: why JSON5 fails
+              </Link>{" "}
+              maps each of those to the exact message it produces.
+            </p>
           </ContentSection>
 
           <ContentSection id="not-encryption" title="Escaping is not encoding, and neither is security">
