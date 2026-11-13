@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { inferType } from "./type-infer";
-import { emitJsonSchema } from "./schema-emit";
+import { emitJsonSchema, emitOpenApi } from "./schema-emit";
 
 describe("emitJsonSchema", () => {
   it("inlines the root object and lists required keys", () => {
@@ -120,5 +120,44 @@ describe("emitJsonSchema", () => {
     expect(schema.type).toBe("array");
     expect(schema.items).toEqual({ $ref: "#/$defs/ItemsItem" });
     expect(schema.$defs.ItemsItem.required).toEqual(["sku"]);
+  });
+});
+
+describe("emitOpenApi", () => {
+  it("wraps every named object in components.schemas", () => {
+    const { code, typeCount } = emitOpenApi(inferType({ address: { city: "London" } }), {
+      rootName: "User",
+    });
+    const doc = JSON.parse(code);
+
+    expect(typeCount).toBe(2);
+    expect(doc.openapi).toBe("3.1.0");
+    expect(doc.jsonSchemaDialect).toContain("2020-12");
+    expect(doc.info.title).toBe("User API");
+    expect(doc.components.schemas.User.properties.address).toEqual({
+      $ref: "#/components/schemas/UserAddress",
+    });
+    expect(doc.components.schemas.UserAddress.required).toEqual(["city"]);
+  });
+
+  it("respects a custom title and strict mode", () => {
+    const doc = JSON.parse(
+      emitOpenApi(inferType({ id: 1 }), {
+        rootName: "Order",
+        apiTitle: "Orders Webhooks",
+        additionalProperties: false,
+      }).code,
+    );
+
+    expect(doc.info.title).toBe("Orders Webhooks");
+    expect(doc.components.schemas.Order.additionalProperties).toBeUndefined();
+  });
+
+  it("puts a primitive root into schemas so it is referencable", () => {
+    const doc = JSON.parse(
+      emitOpenApi(inferType(["a", "b"]), { rootName: "Tags" }).code,
+    );
+
+    expect(doc.components.schemas.Tags).toEqual({ type: "array", items: { type: "string" } });
   });
 });

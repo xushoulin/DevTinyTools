@@ -22,13 +22,14 @@ export const metadata = pageMetadata({
 
 const PRO_FEATURES = [
   <>
-    <strong className="font-medium text-slate-900">Zod and JSON Schema output</strong> — the
-    same inference, emitted as <code className="font-mono text-[12px]">z.object</code> calls
-    with <code className="font-mono text-[12px]">.optional()</code> and{" "}
-    <code className="font-mono text-[12px]">.nullable()</code> already applied, or as a draft
+    <strong className="font-medium text-slate-900">Zod, JSON Schema and OpenAPI output</strong>{" "}
+    — the same inference, emitted as <code className="font-mono text-[12px]">z.object</code>{" "}
+    calls with <code className="font-mono text-[12px]">.optional()</code> and{" "}
+    <code className="font-mono text-[12px]">.nullable()</code> already applied, as a draft
     2020-12 JSON Schema with <code className="font-mono text-[12px]">$defs</code>,{" "}
     <code className="font-mono text-[12px]">$ref</code> and a computed{" "}
-    <code className="font-mono text-[12px]">required</code> list.
+    <code className="font-mono text-[12px]">required</code> list, or as an OpenAPI 3.1 document
+    Swagger UI and Postman import directly.
   </>,
   <>
     <strong className="font-medium text-slate-900">
@@ -49,6 +50,11 @@ const FAQ = [
     question: "What does the JSON Schema output include?",
     answer:
       "A draft 2020-12 document: the root object inlined at the top level, nested objects in $defs referenced with $ref, required computed from every sampled array element, additionalProperties set to false, and integer versus number chosen the same way the Go output picks int64 versus float64. Validate it with any draft 2020-12 checker such as Ajv.",
+  },
+  {
+    question: "Is the OpenAPI document usable without endpoints?",
+    answer:
+      "Yes. OpenAPI 3.1 made paths optional, and this generator emits the parts a JSON sample can actually support: info, jsonSchemaDialect and components.schemas with every named type. Import it into Swagger UI or Postman to browse the models, or attach the components to routes you define yourself — the schema objects are standard draft 2020-12, so generators accept them unchanged.",
   },
   {
     question: "Does it sample every array element or only the first?",
@@ -126,7 +132,7 @@ export default function JsonToTypeScriptPage() {
                 },
                 {
                   title: "Choose interfaces, Zod or JSON Schema",
-                  body: "Interfaces are erased at compile time and cost nothing at runtime. The Zod schema is a runtime validator; the JSON Schema is a language-neutral document any validator — Ajv, a CI gate, an API contract — can consume.",
+                  body: "Interfaces are erased at compile time and cost nothing at runtime. The Zod schema is a runtime validator; the JSON Schema and OpenAPI 3.1 documents are language-neutral — Ajv, a CI gate, Swagger UI or Postman can all consume them.",
                 },
                 {
                   title: "Press Generate, then copy or download",

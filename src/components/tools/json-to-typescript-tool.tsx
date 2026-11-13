@@ -12,7 +12,7 @@ import { TYPES_EXAMPLE } from "@/lib/examples";
 import { formatCount, parseJson, type JsonErrorInfo } from "@/lib/json-utils";
 import { inferType, type InferredType } from "@/lib/type-infer";
 import { emitTypeScript, emitZod } from "@/lib/type-emit";
-import { emitJsonSchema } from "@/lib/schema-emit";
+import { emitJsonSchema, emitOpenApi } from "@/lib/schema-emit";
 import { useProUnlocked } from "@/lib/license";
 import {
   TYPE_FREE_CHAR_LIMIT,
@@ -26,7 +26,7 @@ interface Status {
   detail?: string;
 }
 
-const TARGETS = ["typescript", "zod", "json-schema"] as const;
+const TARGETS = ["typescript", "zod", "json-schema", "openapi"] as const;
 
 type Target = (typeof TARGETS)[number];
 
@@ -34,12 +34,14 @@ const TARGET_LABELS: Record<Target, string> = {
   typescript: "TypeScript interfaces",
   zod: "Zod schema",
   "json-schema": "JSON Schema",
+  openapi: "OpenAPI 3.1",
 };
 
 const TARGET_SUFFIX: Record<Target, string> = {
   typescript: ".ts",
   zod: ".schema.ts",
   "json-schema": ".schema.json",
+  openapi: ".openapi.json",
 };
 
 export function JsonToTypeScriptTool() {
@@ -66,6 +68,9 @@ export function JsonToTypeScriptTool() {
     if (!inferred || lockedTarget) return null;
     if (target === "json-schema") {
       return emitJsonSchema(inferred, { rootName, indent });
+    }
+    if (target === "openapi") {
+      return emitOpenApi(inferred, { rootName, indent });
     }
     const options = { rootName, indent };
     return target === "zod" ? emitZod(inferred, options) : emitTypeScript(inferred, options);
@@ -221,7 +226,7 @@ export function JsonToTypeScriptTool() {
             tone: "info",
             title: "Schema output is a Pro feature",
             detail:
-              "TypeScript interfaces stay free. Pro adds Zod and JSON Schema output, a 10 MB limit and lifetime updates.",
+              "TypeScript interfaces stay free. Pro adds Zod, JSON Schema and OpenAPI output, a 10 MB limit and lifetime updates.",
           }
         : null,
     );
@@ -319,9 +324,9 @@ export function JsonToTypeScriptTool() {
           <div className="flex h-[300px] flex-col justify-center rounded-lg border border-amber-200 bg-amber-50 p-5 lg:h-[440px]">
             <p className="text-sm font-semibold text-amber-900">Schema output is part of Pro</p>
             <p className="mt-2 text-[13px] leading-relaxed text-amber-900/90">
-              Generating TypeScript interfaces stays free. Pro adds the Zod and JSON Schema
-              outputs, raises the document limit to {formatCount(TYPE_PRO_CHAR_LIMIT)} characters
-              and keeps the tool working for a lifetime licence.
+              Generating TypeScript interfaces stays free. Pro adds the Zod, JSON Schema and
+              OpenAPI outputs, raises the document limit to {formatCount(TYPE_PRO_CHAR_LIMIT)}{" "}
+              characters and keeps the tool working for a lifetime licence.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {checkoutUrl ? (

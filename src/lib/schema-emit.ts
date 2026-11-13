@@ -48,6 +48,9 @@ interface SchemaContext {
   named: NamedType[];
   byShape: Map<InferredType, NamedType>;
   strict: boolean;
+  /** Where named objects live, e.g. `#/$defs/` (JSON Schema) or
+   *  `#/components/schemas/` (OpenAPI). */
+  refPrefix: string;
 }
 
 const SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema";
@@ -62,6 +65,7 @@ export function emitJsonSchema(
     named,
     byShape: new Map(named.map((entry) => [entry.shape as InferredType, entry])),
     strict: options.additionalProperties !== false,
+    refPrefix: "#/$defs/",
   };
 
   const defs: Record<string, unknown> = {};
@@ -130,7 +134,7 @@ function renderSchema(type: InferredType, context: SchemaContext): Record<string
       return {};
     case "object": {
       const entry = context.byShape.get(type);
-      if (entry) return { $ref: `#/$defs/${entry.name}` };
+      if (entry) return { $ref: `${context.refPrefix}${entry.name}` };
       // Unreachable while inference caps depth below the naming walk's limit.
       return { type: "object" };
     }
@@ -165,4 +169,69 @@ function renderSchema(type: InferredType, context: SchemaContext): Record<string
 
 function countLines(code: string): number {
   return code.split("\n").filter((line) => line.trim().length > 0).length;
+}
+
+/* ------------------------------------------------------------------ *
+ * OpenAPI 3.1
+ * ------------------------------------------------------------------ */
+
+export interface OpenApiEmitOptions {
+  /** Name of the root schema, and the default API title. */
+  rootName?: string;
+  /** Overrides the generated `info.title`. */
+  apiTitle?: string;
+  /** Set `additionalProperties: false` on every object. Default true. */
+  additionalProperties?: boolean;
+  /** Spaces per nesting level of the emitted JSON. */
+  indent?: 2 | 4;
+}
+
+/**
+ * Wrap the same inference in an OpenAPI 3.1 document. OpenAPI 3.1 adopts
+ * JSON Schema 2020-12 wholesale, so every named object lands in
+ * `components.schemas` and any 3.1 tool — Swagger UI, Postman, code
+ * generators — can consume the result without conversion.
+ *
+ * There are no paths: a JSON sample knows data shapes, not endpoints. The
+ * document is a schema library the caller attaches to routes they know.
+ */
+export function emitOpenApi(
+  root: InferredType,
+  options: OpenApiEmitOptions = {},
+): SchemaEmitResult {
+  const rootName = toPascalCase((options.rootName ?? "").trim()) || "Root";
+  const named = nameObjectTypes(root, rootName);
+  const context: SchemaContext = {
+    named,
+    byShape: new Map(named.map((entry) => [entry.shape as InferredType, entry])),
+    strict: options.additionalProperties !== false,
+    refPrefix: "#/components/schemas/",
+  };
+
+  const schemas: Record<string, unknown> = {};
+  for (const entry of named) {
+    schemas[entry.name] = renderObjectSchema(entry.shape, context);
+  }
+  if (root.kind !== "object") {
+    schemas[rootName] = renderSchema(root, context);
+  }
+
+  const document: Record<string, unknown> = {
+    openapi: "3.1.0",
+    info: {
+      title: options.apiTitle?.trim() || `${rootName} API`,
+      version: "1.0.0",
+      description:
+        "Generated from a JSON sample by DevTinyTools. Every array element was sampled, so required reflects the data you pasted.",
+    },
+    jsonSchemaDialect: SCHEMA_DIALECT,
+    components: { schemas },
+  };
+
+  const code = `${JSON.stringify(document, null, options.indent ?? 2)}\n`;
+  return {
+    code,
+    typeCount: Object.keys(schemas).length,
+    lineCount: countLines(code),
+  };
 }
