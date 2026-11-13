@@ -30,9 +30,15 @@ export const DIFF_PRO_CHAR_LIMIT = 10_000_000;
 export const PRO_PRICE_MONTHLY = "$9";
 export const PRO_PRICE_LIFETIME = "$29";
 
+/** Live Lemon Squeezy checkout for DevTinyTools Pro ($29 lifetime licence).
+ *  Kept as a fallback so the hosted deployment works without extra env wiring;
+ *  NEXT_PUBLIC_PRO_CHECKOUT_URL still overrides it when set. */
+const DEFAULT_PRO_CHECKOUT_URL =
+  "https://devtinytools.lemonsqueezy.com/checkout/buy/79322634-c55f-4048-8640-62263e0bf326";
+
 /** Normalised checkout URL, or null when Pro is not wired up yet. */
 export function getProCheckoutUrl(): string | null {
-  const raw = (process.env.NEXT_PUBLIC_PRO_CHECKOUT_URL ?? "").trim();
+  const raw = (process.env.NEXT_PUBLIC_PRO_CHECKOUT_URL ?? DEFAULT_PRO_CHECKOUT_URL).trim();
   if (!raw) return null;
   try {
     const parsed = new URL(raw);
