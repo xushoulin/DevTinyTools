@@ -14,9 +14,9 @@ import { absoluteUrl } from "@/lib/site";
 const PATH = "/json-to-typescript";
 
 export const metadata = pageMetadata({
-  title: "JSON to TypeScript | Interfaces & Zod Schema Generator",
+  title: "JSON to TypeScript & Zod Generator",
   description:
-    "Generate TypeScript interfaces or a Zod schema from JSON. Every array element is sampled, so keys that only some records carry become optional. Runs in your browser.",
+    "Generate TypeScript interfaces or a Zod schema from JSON. Every array element is sampled, so keys that only some records carry become optional.",
   path: PATH,
 });
 

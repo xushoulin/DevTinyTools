@@ -83,7 +83,7 @@ export const TOOLS: ToolDefinition[] = [
     summary:
       "Generate TypeScript interfaces from a JSON sample, with optional properties and unions inferred from every array element.",
     description:
-      "Generate TypeScript interfaces or a Zod schema from JSON. Every array element is sampled, so missing keys become optional. Runs in your browser.",
+      "Generate TypeScript interfaces or a Zod schema from JSON. Every array element is sampled, so keys that only some records carry become optional.",
     category: "JSON",
   },
 ];

@@ -19,7 +19,7 @@ const PATH = "/json-to-csv";
 export const metadata = pageMetadata({
   title: "JSON to CSV Converter",
   description:
-    "Convert a JSON array to CSV online. Nested objects become dotted columns, every value is escaped per RFC 4180, and the file downloads ready for Excel. Runs in your browser.",
+    "Convert a JSON array to CSV online. Nested objects become dotted columns, every value is escaped per RFC 4180, and the file downloads ready for Excel.",
   path: PATH,
 });
 
