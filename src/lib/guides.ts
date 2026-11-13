@@ -211,6 +211,22 @@ export const GUIDES: GuideDefinition[] = [
     topic: "Typing",
     relatedTool: { href: "/json-to-typescript", name: "JSON to TypeScript" },
   },
+  {
+    slug: "convert-json-to-go-struct",
+    href: "/guides/convert-json-to-go-struct",
+    title: "JSON to Go structs: what the tags cannot say",
+    shortTitle: "Typing Go",
+    description:
+      "Why every number crosses encoding/json as a float64, what omitempty really skips, and the tag forms that separate absent keys from null ones.",
+    summary:
+      "A generated struct compiles and unmarshals the sample, then quietly returns zero values for keys that were never sent. The three places JSON and Go disagree hard enough to lose data — numbers, absence, names — and the tags that encode each decision.",
+    lede:
+      "A struct generated from a JSON sample looks finished until the endpoint sends a record that omits a field. Nothing errors; the field just holds a zero value that means nothing. This guide is about the three places where JSON and Go disagree hard enough to lose data, and the tags that let you decide, per field, what “not there” means.",
+    publishedAt: "2026-11-13",
+    readingMinutes: 9,
+    topic: "Typing",
+    relatedTool: { href: "/json-to-go", name: "JSON to Go" },
+  },
 ];
 
 export function getGuide(slug: string): GuideDefinition | undefined {
