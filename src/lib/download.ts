@@ -63,6 +63,48 @@ export function downloadTextFile(
   }
 }
 
+/**
+ * Trigger a client-side download of raw bytes (e.g. a generated ZIP archive).
+ * Returns `ok: false` instead of throwing.
+ */
+export function downloadBinaryFile(
+  content: Uint8Array<ArrayBuffer>,
+  filename: string,
+  mimeType = "application/zip",
+): DownloadResult {
+  const safeName = safeFilename(filename, "archive.zip");
+
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return { ok: false, filename: safeName };
+  }
+
+  let url: string | null = null;
+
+  try {
+    const blob = new Blob([content], { type: mimeType });
+    url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = safeName;
+    link.rel = "noopener";
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    return { ok: true, filename: safeName };
+  } catch {
+    return { ok: false, filename: safeName };
+  } finally {
+    if (url) {
+      // Give the browser a moment to start the download before revoking.
+      window.setTimeout(() => URL.revokeObjectURL(url as string), 10_000);
+    }
+  }
+}
+
 /** `json-2026-10-21-0920.json` style names: stable, sortable, safe. */
 export function timestampedFilename(prefix: string, now: Date = new Date()): string {
   const pad = (value: number) => value.toString().padStart(2, "0");

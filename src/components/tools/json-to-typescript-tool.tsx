@@ -7,12 +7,19 @@ import { JsonErrorPanel } from "@/components/ui/json-error-panel";
 import { Notice } from "@/components/ui/notice";
 import { buttonClass } from "@/components/ui/button";
 import { copyText } from "@/lib/clipboard";
-import { downloadTextFile } from "@/lib/download";
+import { downloadBinaryFile, downloadTextFile } from "@/lib/download";
 import { TYPES_EXAMPLE } from "@/lib/examples";
 import { formatCount, parseJson, type JsonErrorInfo } from "@/lib/json-utils";
 import { inferType, type InferredType } from "@/lib/type-infer";
 import { emitTypeScript, emitZod } from "@/lib/type-emit";
 import { emitJsonSchema, emitOpenApi } from "@/lib/schema-emit";
+import {
+  BATCH_TARGET_SUFFIX,
+  convertBatchFiles,
+  type BatchFileResult,
+  type BatchTarget,
+} from "@/lib/batch-convert";
+import { createZip } from "@/lib/zip";
 import { useProUnlocked } from "@/lib/license";
 import {
   TYPE_FREE_CHAR_LIMIT,
@@ -26,7 +33,7 @@ interface Status {
   detail?: string;
 }
 
-const TARGETS = ["typescript", "zod", "json-schema", "openapi"] as const;
+const TARGETS = ["typescript", "zod", "json-schema", "openapi"] as const satisfies readonly BatchTarget[];
 
 type Target = (typeof TARGETS)[number];
 
@@ -37,13 +44,6 @@ const TARGET_LABELS: Record<Target, string> = {
   openapi: "OpenAPI 3.1",
 };
 
-const TARGET_SUFFIX: Record<Target, string> = {
-  typescript: ".ts",
-  zod: ".schema.ts",
-  "json-schema": ".schema.json",
-  openapi: ".openapi.json",
-};
-
 export function JsonToTypeScriptTool() {
   const [input, setInput] = useState("");
   const [inferred, setInferred] = useState<InferredType | null>(null);
@@ -52,6 +52,8 @@ export function JsonToTypeScriptTool() {
   const [target, setTarget] = useState<Target>("typescript");
   const [rootName, setRootName] = useState("Root");
   const [indent, setIndent] = useState<2 | 4>(2);
+  const [batch, setBatch] = useState<BatchFileResult[] | null>(null);
+  const [batchTarget, setBatchTarget] = useState<Target>("typescript");
 
   const checkoutUrl = getProCheckoutUrl();
   // Hydration-safe: the server snapshot is unlicensed, the client reads
@@ -80,7 +82,7 @@ export function JsonToTypeScriptTool() {
 
   function handleGenerate() {
     setError(null);
-
+    setBatch(null);
     if (!input.trim()) {
       setStatus({
         tone: "error",
@@ -159,7 +161,7 @@ export function JsonToTypeScriptTool() {
     }
 
     const base = rootName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-") || "types";
-    const download = downloadTextFile(output, `${base}${TARGET_SUFFIX[target]}`);
+    const download = downloadTextFile(output, `${base}${BATCH_TARGET_SUFFIX[target]}`);
     setStatus(
       download.ok
         ? { tone: "success", title: "Download started", detail: `Saved as ${download.filename}.` }
@@ -176,6 +178,7 @@ export function JsonToTypeScriptTool() {
     setInput("");
     setInferred(null);
     setError(null);
+    setBatch(null);
     setStatus({ tone: "info", title: "Cleared", detail: "The editor and the output are now empty." });
   }
 
@@ -183,6 +186,7 @@ export function JsonToTypeScriptTool() {
     setInput(TYPES_EXAMPLE);
     setInferred(null);
     setError(null);
+    setBatch(null);
     setStatus({
       tone: "info",
       title: "Example loaded",
@@ -192,15 +196,23 @@ export function JsonToTypeScriptTool() {
   }
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (files.length === 0) return;
 
+    if (files.length > 1) {
+      void handleBatchFiles(files);
+      return;
+    }
+
+    const file = files[0];
     const reader = new FileReader();
     reader.onload = () => {
       const text = typeof reader.result === "string" ? reader.result : "";
       setInput(text);
       setInferred(null);
       setError(null);
+      setBatch(null);
       setStatus({
         tone: "info",
         title: `${file.name} loaded`,
@@ -215,7 +227,86 @@ export function JsonToTypeScriptTool() {
       });
     };
     reader.readAsText(file);
-    event.target.value = "";
+  }
+
+  function readFileText(file: File): Promise<string | null> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+      reader.onerror = () => resolve(null);
+      reader.readAsText(file);
+    });
+  }
+
+  async function handleBatchFiles(files: File[]) {
+    if (!proAvailable) {
+      setStatus({
+        tone: "info",
+        title: "Batch conversion is a Pro feature",
+        detail:
+          "Pro converts every selected file in one pass and hands you a single ZIP. Single files and TypeScript interfaces stay free.",
+      });
+      return;
+    }
+
+    const texts = await Promise.all(files.map(readFileText));
+    const results = convertBatchFiles(
+      files.map((file, index) => ({ name: file.name, text: texts[index] })),
+      { target, indent, charLimit: TYPE_PRO_CHAR_LIMIT },
+    );
+
+    const okCount = results.filter((entry) => entry.ok).length;
+    setBatch(results);
+    setBatchTarget(target);
+    setStatus({
+      tone: okCount === results.length ? "success" : "info",
+      title: `Converted ${okCount} of ${results.length} ${results.length === 1 ? "file" : "files"}`,
+      detail: `Each file became ${TARGET_LABELS[target]}, named after the source file. Download everything as one ZIP below.`,
+    });
+  }
+
+  function handleBatchDownload() {
+    const usable = (batch ?? []).filter(
+      (entry): entry is BatchFileResult & { code: string } => entry.ok && Boolean(entry.code),
+    );
+    if (usable.length === 0) {
+      setStatus({
+        tone: "error",
+        title: "Nothing to archive",
+        detail: "None of the selected files produced output, so there is no ZIP to build.",
+      });
+      return;
+    }
+
+    const archive = createZip(usable.map((entry) => ({ name: entry.filename, content: entry.code })));
+    const download = downloadBinaryFile(archive, "devtinytools-batch.zip");
+    setStatus(
+      download.ok
+        ? {
+            tone: "success",
+            title: "Download started",
+            detail: `Saved ${usable.length} files as ${download.filename}.`,
+          }
+        : {
+            tone: "error",
+            title: "Download failed",
+            detail: "Your browser blocked the download. Save each file individually instead.",
+          },
+    );
+  }
+
+  function handleBatchSaveOne(entry: BatchFileResult) {
+    if (!entry.code) return;
+    const download = downloadTextFile(entry.code, entry.filename);
+    setStatus(
+      download.ok
+        ? { tone: "success", title: "Download started", detail: `Saved as ${download.filename}.` }
+        : {
+            tone: "error",
+            title: "Download failed",
+            detail: "Your browser blocked the download. Copy the output into a file instead.",
+          },
+    );
   }
 
   function handleTargetChange(next: Target) {
@@ -243,10 +334,11 @@ export function JsonToTypeScriptTool() {
             Load example
           </button>
           <label className={buttonClass("secondary")}>
-            Open a .json file
+            Open .json file{proAvailable ? "(s)" : ""}
             <input
               type="file"
               accept=".json,application/json,text/plain"
+              multiple={proAvailable}
               onChange={handleFileChange}
               className="sr-only"
             />
@@ -320,7 +412,59 @@ export function JsonToTypeScriptTool() {
           meta={<span className="tabular-nums">{formatCount(input.length)} chars</span>}
         />
 
-        {lockedTarget ? (
+        {batch ? (
+          <div className="flex h-[300px] flex-col overflow-hidden rounded-lg border border-slate-200 bg-white lg:h-[440px]">
+            <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-3 py-2">
+              <div>
+                <p className="text-[13px] font-medium text-slate-800">Batch conversion</p>
+                <p className="text-[12px] text-slate-500">
+                  {batch.filter((entry) => entry.ok).length} of {batch.length}{" "}
+                  {batch.length === 1 ? "file" : "files"} → {TARGET_LABELS[batchTarget]}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleBatchDownload}
+                disabled={batch.every((entry) => !entry.ok)}
+                className="rounded border border-slate-700 px-2 py-1 text-[11px] text-slate-200 hover:bg-slate-800 disabled:cursor-not-allowed disabled:border-slate-300 disabled:text-slate-400"
+              >
+                Download ZIP
+              </button>
+            </div>
+            <ul className="flex-1 divide-y divide-slate-100 overflow-auto">
+              {batch.map((entry) => (
+                <li
+                  key={entry.sourceFile}
+                  className="flex items-center justify-between gap-3 px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-mono text-[12px] text-slate-800">{entry.filename}</p>
+                    <p
+                      className={
+                        entry.ok
+                          ? "text-[12px] text-slate-500"
+                          : "text-[12px] text-red-600"
+                      }
+                    >
+                      {entry.ok
+                        ? `${formatCount(entry.typeCount ?? 0)} types · ${formatCount(entry.lineCount ?? 0)} lines`
+                        : (entry.detail ?? "Failed")}
+                    </p>
+                  </div>
+                  {entry.ok ? (
+                    <button
+                      type="button"
+                      onClick={() => handleBatchSaveOne(entry)}
+                      className="shrink-0 rounded border border-slate-700 px-2 py-0.5 text-[11px] text-slate-200 hover:bg-slate-800"
+                    >
+                      Save
+                    </button>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : lockedTarget ? (
           <div className="flex h-[300px] flex-col justify-center rounded-lg border border-amber-200 bg-amber-50 p-5 lg:h-[440px]">
             <p className="text-sm font-semibold text-amber-900">Schema output is part of Pro</p>
             <p className="mt-2 text-[13px] leading-relaxed text-amber-900/90">

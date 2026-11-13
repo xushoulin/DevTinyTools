@@ -22,6 +22,12 @@ export const metadata = pageMetadata({
 
 const PRO_FEATURES = [
   <>
+    <strong className="font-medium text-slate-900">Batch conversion</strong> — select several
+    .json files at once, convert every one to the chosen output, and download the whole set as
+    a single ZIP. Files that fail to parse are listed with the reason instead of blocking the
+    rest.
+  </>,
+  <>
     <strong className="font-medium text-slate-900">Zod, JSON Schema and OpenAPI output</strong>{" "}
     — the same inference, emitted as <code className="font-mono text-[12px]">z.object</code>{" "}
     calls with <code className="font-mono text-[12px]">.optional()</code> and{" "}
@@ -46,6 +52,11 @@ const PRO_FEATURES = [
 ];
 
 const FAQ = [
+  {
+    question: "How does batch conversion work?",
+    answer:
+      "Select several .json files in the file picker. Each one is inferred and converted to the output you chose — TypeScript, Zod, JSON Schema or OpenAPI — with the root type named after the source file (orders.json becomes Orders). You get a per-file list with the option to save any single result, or download everything as one ZIP. Nothing is uploaded; the files are read locally like pasted text.",
+  },
   {
     question: "What does the JSON Schema output include?",
     answer:
