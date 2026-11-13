@@ -14,7 +14,9 @@ const SLUG = "convert-json-to-java-pojo";
 const guide = getGuide(SLUG)!;
 
 export const metadata = pageMetadata({
-  title: guide.title,
+  // The H1 keeps the full clause; the SERP title has to leave room for the
+  // 16-character site suffix and still fit inside 60 characters.
+  title: "JSON to Java POJOs: primitive or boxed",
   description: guide.description,
   path: guide.href,
 });

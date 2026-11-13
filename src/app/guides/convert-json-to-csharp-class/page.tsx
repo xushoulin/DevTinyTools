@@ -14,7 +14,8 @@ const SLUG = "convert-json-to-csharp-class";
 const guide = getGuide(SLUG)!;
 
 export const metadata = pageMetadata({
-  title: guide.title,
+  // Short enough for the 60-character budget once the site suffix is added.
+  title: "JSON to C#: nullable, CS8618, JsonElement",
   description: guide.description,
   path: guide.href,
 });
