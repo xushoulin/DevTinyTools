@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { AdSlot } from "@/components/ad-slot";
 import { ContentSection, ProseList, StepList } from "@/components/content-section";
 import { FaqSection } from "@/components/faq-section";
@@ -11,7 +10,7 @@ import { pageMetadata } from "@/lib/metadata";
 import {
   CSV_PRO_CHAR_LIMIT,
   PRO_PRICE_LIFETIME,
-  PRO_PRICE_MONTHLY,
+  getProCheckoutUrl,
 } from "@/lib/pro";
 import { absoluteUrl } from "@/lib/site";
 
@@ -195,14 +194,18 @@ export default function JsonToCsvPage() {
             </p>
             <ProseList items={PRO_FEATURES} />
             <p>
-              Pricing is {PRO_PRICE_MONTHLY}/month or {PRO_PRICE_LIFETIME} one-time, sold
+              Pro is {PRO_PRICE_LIFETIME} one-time — a lifetime licence, sold
               through Lemon Squeezy as merchant of record, so VAT and sales tax are
-              handled for you. Pro is a licence key — there is still no account. Checkout
-              is opening soon;{" "}
-              <Link href="/contact" className="text-blue-700 underline underline-offset-2">
-                email us
-              </Link>{" "}
-              and you will get the first-month discount when it does.
+              handled for you. Pro is a licence key — there is still no account.{" "}
+              <a
+                href={getProCheckoutUrl() ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                Buy DevTinyTools Pro
+              </a>
+              , then activate it below and the higher limits unlock in this browser.
             </p>
             <LicenseDialog />
           </ContentSection>

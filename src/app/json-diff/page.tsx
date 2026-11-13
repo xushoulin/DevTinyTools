@@ -10,7 +10,7 @@ import { JsonDiffTool } from "@/components/tools/json-diff-tool";
 import { pageMetadata } from "@/lib/metadata";
 import { MAX_DIFF_ENTRIES } from "@/lib/json-diff";
 import { formatCount } from "@/lib/json-utils";
-import { DIFF_FREE_CHAR_LIMIT, DIFF_PRO_CHAR_LIMIT, PRO_PRICE_LIFETIME, PRO_PRICE_MONTHLY, getProCheckoutUrl } from "@/lib/pro";
+import { DIFF_FREE_CHAR_LIMIT, DIFF_PRO_CHAR_LIMIT, PRO_PRICE_LIFETIME, getProCheckoutUrl } from "@/lib/pro";
 import { absoluteUrl } from "@/lib/site";
 
 const PATH = "/json-diff";
@@ -291,14 +291,18 @@ export default function JsonDiffPage() {
               ]}
             />
             <p>
-              Pricing is {PRO_PRICE_MONTHLY}/month or {PRO_PRICE_LIFETIME} one-time, sold
+              Pro is {PRO_PRICE_LIFETIME} one-time — a lifetime licence, sold
               through Lemon Squeezy as merchant of record, so VAT and sales tax are
-              handled for you. Pro is a licence key — there is still no account. Checkout
-              is opening soon;{" "}
-              <Link href="/contact" className="text-blue-700 underline underline-offset-2">
-                email us
-              </Link>{" "}
-              and you will get the first-month discount when it does.
+              handled for you. Pro is a licence key — there is still no account.{" "}
+              <a
+                href={getProCheckoutUrl() ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                Buy DevTinyTools Pro
+              </a>
+              , then activate it below and the higher limits unlock in this browser.
             </p>
             <LicenseDialog />
           </ContentSection>
