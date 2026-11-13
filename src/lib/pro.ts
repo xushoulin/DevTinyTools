@@ -45,6 +45,12 @@ export const JAVA_FREE_CHAR_LIMIT = 1_000_000;
 /** Pro-tier cap for Java POJO generation, in characters (roughly 10 MB of JSON). */
 export const JAVA_PRO_CHAR_LIMIT = 10_000_000;
 
+/** Free-tier cap for Python model generation, in characters (roughly 1 MB of JSON). */
+export const PYTHON_FREE_CHAR_LIMIT = 1_000_000;
+
+/** Pro-tier cap for Python model generation, in characters (roughly 10 MB of JSON). */
+export const PYTHON_PRO_CHAR_LIMIT = 10_000_000;
+
 /** Free-tier cap for C# class generation, in characters (roughly 1 MB of JSON). */
 export const CSHARP_FREE_CHAR_LIMIT = 1_000_000;
 

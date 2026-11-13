@@ -4,7 +4,6 @@ import { useState } from "react";
 import { JsonTextArea } from "@/components/ui/json-textarea";
 import { Notice } from "@/components/ui/notice";
 import { buttonClass } from "@/components/ui/button";
-import { copyText } from "@/lib/clipboard";
 import { downloadTextFile, timestampedFilename } from "@/lib/download";
 import { DIFF_AFTER_EXAMPLE, DIFF_BEFORE_EXAMPLE } from "@/lib/examples";
 import {

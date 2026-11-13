@@ -117,6 +117,16 @@ export const TOOLS: ToolDefinition[] = [
     category: "JSON",
   },
   {
+    href: "/json-to-python",
+    name: "JSON to Python",
+    heading: "JSON to Python Class Generator",
+    summary:
+      "Generate Pydantic v2 models or dataclasses from JSON, with snake_case fields, Optional where a key is missing or null, and keyword keys renamed safely.",
+    description:
+      "Generate Python models from JSON: Pydantic v2 or dataclasses, snake_case fields, Field(alias) for the wire keys, Optional only where a key is absent or null.",
+    category: "JSON",
+  },
+  {
     href: "/json-to-csharp",
     name: "JSON to C#",
     heading: "JSON to C# Class Generator",

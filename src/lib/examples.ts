@@ -320,3 +320,40 @@ export const CSHARP_EXAMPLE = `[
     ]
   }
 ]`;
+
+/**
+ * Two orders whose keys are deliberately awkward for Python: `class` and
+ * `from` are keywords, `orderId` needs snake_case plus an alias, the second
+ * order omits `unitPrice` on its only item, and one coupon is null.
+ */
+export const PYTHON_EXAMPLE = `[
+  {
+    "orderId": 9021073482910473,
+    "class": "premium",
+    "from": "web",
+    "customer": {
+      "fullName": "Ada Lovelace",
+      "email": "ada@example.com"
+    },
+    "items": [
+      { "sku": "KB-01", "unitPrice": 99.5, "quantity": 1 }
+    ],
+    "coupon_code": "SUMMER10",
+    "shipped": true
+  },
+  {
+    "orderId": 9021073482910474,
+    "class": "basic",
+    "from": "api",
+    "customer": {
+      "fullName": "Grace Hopper",
+      "email": "grace@example.com"
+    },
+    "items": [
+      { "sku": "USB-02", "quantity": 2 }
+    ],
+    "coupon_code": null,
+    "shipped": false,
+    "note": "leave at door"
+  }
+]`;
