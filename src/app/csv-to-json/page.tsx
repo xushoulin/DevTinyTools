@@ -20,7 +20,7 @@ const PATH = "/csv-to-json";
 export const metadata = pageMetadata({
   title: "CSV to JSON Converter",
   description:
-    "Convert CSV to JSON online. Handles quoted commas and line breaks per RFC 4180, unflattens dotted headers into nested objects, and never rewrites a number it cannot round-trip.",
+    "Convert CSV to JSON in the browser. Quoted commas, delimiter detection, dotted headers unflattened, and numbers converted only when they round-trip exactly.",
   path: PATH,
 });
 

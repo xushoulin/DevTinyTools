@@ -14,7 +14,8 @@ const SLUG = "generate-typescript-types-from-json";
 const guide = getGuide(SLUG)!;
 
 export const metadata = pageMetadata({
-  title: guide.title,
+  // Short enough for the 60-character budget once the site suffix is added.
+  title: "JSON to TypeScript: samples aren't schemas",
   description: guide.description,
   path: guide.href,
 });

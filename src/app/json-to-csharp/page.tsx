@@ -16,7 +16,7 @@ const PATH = "/json-to-csharp";
 export const metadata = pageMetadata({
   title: "JSON to C# Class Generator",
   description:
-    "Generate C# classes from JSON with #nullable enable, nullable value types for optional keys, initialisers that avoid CS8618, and [JsonPropertyName] from every JSON key.",
+    "Generate C# classes from JSON with #nullable enable, nullable annotations from every record, CS8618-safe initialisers and [JsonPropertyName] on each key.",
   path: PATH,
 });
 

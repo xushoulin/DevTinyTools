@@ -9,7 +9,9 @@ const SLUG = "convert-json-to-csv";
 const guide = getGuide(SLUG)!;
 
 export const metadata = pageMetadata({
-  title: guide.title,
+  // The H1 needs the full sentence; the SERP title has to leave room for the
+  // 16-character site suffix and still fit inside 60 characters.
+  title: "JSON to CSV: what breaks on the way",
   description: guide.description,
   path: guide.href,
 });

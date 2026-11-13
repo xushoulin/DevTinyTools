@@ -16,7 +16,7 @@ const PATH = "/json-to-java";
 export const metadata = pageMetadata({
   title: "JSON to Java POJO Generator",
   description:
-    "Generate Java classes from JSON. Required numbers stay primitive, optional and nullable ones become boxed, snake_case keys get @JsonProperty, and nested objects become static classes.",
+    "Generate Java classes from JSON: primitives where a value is required, boxed types where it can be null, @JsonProperty for snake_case keys.",
   path: PATH,
 });
 
