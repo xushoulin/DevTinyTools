@@ -39,19 +39,16 @@ export interface JavaEmitResult {
 
 export function emitJava(root: InferredType, options: JavaEmitOptions): JavaEmitResult {
   const unit = " ".repeat(options.indent);
-  const named = nameObjectTypes(root, options.rootName);
+  let named = nameObjectTypes(root, options.rootName);
   const byShape = new Map<InferredType, string>();
 
-  for (const entry of named) byShape.set(entry.shape, entry.name);
-
   const header: string[] = [];
-  let declarations = named;
 
   if (root.kind !== "object") {
     const element = root.kind === "array" ? root.items : null;
     const elementShape = element && element.kind === "object" ? element : null;
 
-    if (!elementShape || named.length === 0) {
+    if (!elementShape) {
       // A bare primitive root has no class to generate. Say so instead of
       // inventing a wrapper the API never sends.
       return {
@@ -61,15 +58,17 @@ export function emitJava(root: InferredType, options: JavaEmitOptions): JavaEmit
       };
     }
 
-    // Name the element class after the root so the file has a sensible name.
-    byShape.set(elementShape, options.rootName);
-    declarations = named.map((entry, index) =>
-      index === 0 ? { ...entry, name: options.rootName } : entry,
-    );
+    // Name the element class after the root — and re-derive every nested name
+    // from it, so the children are OrderCustomer rather than OrderItemCustomer.
+    named = nameObjectTypes(elementShape, options.rootName);
     header.push(
       `// The JSON root is an array. This file models one element; hold them in List<${options.rootName}>.`,
     );
   }
+
+  for (const entry of named) byShape.set(entry.shape, entry.name);
+
+  const declarations = named;
 
   const usesList = containsArray(root) || named.some((entry) => entry.shape.properties.some((p) => needsListForType(p.type)));
   const usesJackson =

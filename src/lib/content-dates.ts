@@ -29,4 +29,5 @@ export const TOOL_PAGE_DATES: Record<string, string> = {
   "/json-to-go": "2026-11-13",
   "/csv-to-json": "2026-11-13",
   "/json-to-java": "2026-11-13",
+  "/json-to-csharp": "2026-11-13",
 };

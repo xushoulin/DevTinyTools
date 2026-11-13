@@ -285,3 +285,38 @@ export const JAVA_EXAMPLE = `[
     "items": []
   }
 ]`;
+
+/**
+ * Example JSON for the C# generator. Chosen to exercise the four C# decisions:
+ * snake_case keys (`[JsonPropertyName]`), a key missing from the second item
+ * (`double?`), a value that is null (`string?`), and a nested array of objects
+ * (`List<...>` plus a second class).
+ */
+export const CSHARP_EXAMPLE = `[
+  {
+    "order_id": 84126,
+    "coupon_code": "SUMMER10",
+    "total": 129.5,
+    "paid": true,
+    "customer": {
+      "display_name": "Ada Lovelace",
+      "email": "ada@example.com"
+    },
+    "items": [
+      { "sku": "KB-01", "quantity": 1, "unit_price": 99.5 }
+    ]
+  },
+  {
+    "order_id": 84127,
+    "coupon_code": null,
+    "total": 42,
+    "paid": false,
+    "customer": {
+      "display_name": "Grace Hopper",
+      "email": "grace@example.com"
+    },
+    "items": [
+      { "sku": "USB-02", "quantity": 2 }
+    ]
+  }
+]`;

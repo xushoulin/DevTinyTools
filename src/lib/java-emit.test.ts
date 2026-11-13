@@ -153,3 +153,18 @@ describe("emitJava", () => {
     expect(code).toContain("private long id;");
   });
 });
+
+describe("emitJava: array-root naming", () => {
+  it("derives nested names from the root, not from the element path", () => {
+    const { code } = emitJava(inferType([{ customer: { city: "Oslo" } }]), {
+      rootName: "Order",
+      jackson: true,
+      accessors: false,
+      indent: 4,
+    });
+
+    expect(code).toContain("private OrderCustomer customer;");
+    expect(code).toContain("public static class OrderCustomer {");
+    expect(code).not.toContain("OrderItemCustomer");
+  });
+});

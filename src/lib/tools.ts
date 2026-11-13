@@ -116,6 +116,16 @@ export const TOOLS: ToolDefinition[] = [
       "Generate Java POJOs from JSON with primitives or boxed types chosen per field, @JsonProperty for snake_case keys and nested objects as static classes. Runs in your browser.",
     category: "JSON",
   },
+  {
+    href: "/json-to-csharp",
+    name: "JSON to C#",
+    heading: "JSON to C# Class Generator",
+    summary:
+      "Generate C# classes from JSON with nullable annotations taken from every record, initialisers that avoid CS8618 and [JsonPropertyName] for each wire key.",
+    description:
+      "Generate C# classes from JSON with #nullable enable, long? and string? where a key is optional or null, and [JsonPropertyName] so System.Text.Json binds every key. Runs locally.",
+    category: "JSON",
+  },
 ];
 
 export const PLANNED_TOOLS: Array<{ name: string; summary: string }> = [];
