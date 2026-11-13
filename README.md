@@ -46,9 +46,10 @@ npm install        # install dependencies
 npm run dev        # dev server on http://localhost:3000
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run test       # Vitest (182 unit tests)
+npm run test       # Vitest (393 unit tests)
 npm run build      # production build
 npm run indexnow   # push sitemap URLs to IndexNow (Bing, Yandex, Seznam)
+npm run audit      # crawl the live sitemap and check every page head
 npm run check      # lint + typecheck + test + build
 ```
 
@@ -152,6 +153,18 @@ sitemap and internal links.
 npm run indexnow                    # every URL in the live sitemap
 npm run indexnow -- /json-diff      # one path
 npm run indexnow -- --dry-run       # print the payload, send nothing
+```
+
+### Head audit
+
+`scripts/audit.mjs` fetches every URL in the live sitemap and measures what a
+search engine sees: title length after the 16-character site suffix, meta
+description length, canonical, H1 and the JSON-LD blocks. It decodes HTML
+entities first, because `&amp;` is five characters of markup and one character
+of title — counting markup bytes reports limits no reader ever sees.
+
+```bash
+npm run audit
 ```
 
 The key lives in `public/<key>.txt`: the file name is the key, its contents are
