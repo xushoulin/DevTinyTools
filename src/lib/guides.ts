@@ -42,6 +42,7 @@ export const GUIDE_TOPICS = [
   "Diffing",
   "Syntax",
   "Converting",
+  "Typing",
 ] as const;
 
 export type GuideTopic = (typeof GUIDE_TOPICS)[number];
@@ -193,6 +194,22 @@ export const GUIDES: GuideDefinition[] = [
     readingMinutes: 8,
     topic: "Converting",
     relatedTool: { href: "/json-to-csv", name: "JSON to CSV" },
+  },
+  {
+    slug: "generate-typescript-types-from-json",
+    href: "/guides/generate-typescript-types-from-json",
+    title: "JSON to TypeScript: your sample is not a schema",
+    shortTitle: "Typing JSON",
+    description:
+      "A generated interface is only as good as the sample behind it. What merging two responses changes, and the five things no generator can decide for you.",
+    summary:
+      "One response produces a clean interface that compiles. The next omits a field and it crashes. The gap between those two outcomes is decided by how many samples the generator saw — and by four questions it cannot answer alone.",
+    lede:
+      "Generating TypeScript from JSON feels like a solved problem until the second response arrives with a field missing. The interface did not change; the data did. This guide is about the gap between a type that compiles and a type that is true, and how to tell which one you have.",
+    publishedAt: "2026-11-13",
+    readingMinutes: 9,
+    topic: "Typing",
+    relatedTool: { href: "/json-to-typescript", name: "JSON to TypeScript" },
   },
 ];
 

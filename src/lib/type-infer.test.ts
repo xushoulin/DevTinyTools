@@ -158,6 +158,16 @@ describe("nameObjectTypes", () => {
     const named = nameObjectTypes(inferType([{ id: 1 }]), "Root");
     expect(named[0].name).toBe("RootItem");
   });
+
+  it("does not stutter when the property already reads as a collection", () => {
+    const named = nameObjectTypes(inferType({ items: [{ sku: "a" }] }), "Root");
+    expect(named.map((entry) => entry.name)).toEqual(["Root", "RootItems"]);
+  });
+
+  it("still appends Item for a plural that is not Items", () => {
+    const named = nameObjectTypes(inferType({ orders: [{ id: 1 }] }), "Root");
+    expect(named.map((entry) => entry.name)).toEqual(["Root", "RootOrdersItem"]);
+  });
 });
 
 describe("identifier helpers", () => {

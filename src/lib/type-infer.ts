@@ -238,8 +238,12 @@ export function nameObjectTypes(root: InferredType, rootName = "Root"): NamedTyp
       return;
     }
     if (type.kind === "array") {
-      const isArrayOfObjects = type.items.kind === "object" || type.items.kind === "array" || type.items.kind === "union";
-      enqueue(type.items, isArrayOfObjects ? `${path}Item` : path, depth + 1);
+      const isArrayOfObjects =
+        type.items.kind === "object" || type.items.kind === "array" || type.items.kind === "union";
+      // `items` already reads as a collection, so `RootItemsItem` would stutter.
+      // Only append `Item` when the path does not already end in Items/Item.
+      const itemSuffix = isArrayOfObjects && !/Items?$/.test(path) ? "Item" : "";
+      enqueue(type.items, `${path}${itemSuffix}`, depth + 1);
       return;
     }
     if (type.kind === "union") {

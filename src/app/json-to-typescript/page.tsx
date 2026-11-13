@@ -1,4 +1,5 @@
 import { AdSlot } from "@/components/ad-slot";
+import Link from "next/link";
 import { ContentSection, ProseList, StepList } from "@/components/content-section";
 import { FaqSection } from "@/components/faq-section";
 import { JsonLd } from "@/components/json-ld";
@@ -174,7 +175,14 @@ export default function JsonToTypeScriptPage() {
               field in every record, it comes out required even if the API omits it
               occasionally. A generator can only describe the data it was shown. Paste a
               larger sample, or mark the field optional by hand, when you know the schema
-              is looser than the sample.
+              is looser than the sample.{" "}
+              <Link
+                href="/guides/generate-typescript-types-from-json"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                The full guide
+              </Link>{" "}
+              walks through what merging samples changes and where inference stops.
             </p>
           </ContentSection>
 
