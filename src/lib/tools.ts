@@ -86,6 +86,16 @@ export const TOOLS: ToolDefinition[] = [
       "Generate TypeScript interfaces or a Zod schema from JSON. Every array element is sampled, so keys that only some records carry become optional.",
     category: "JSON",
   },
+  {
+    href: "/json-to-go",
+    name: "JSON to Go",
+    heading: "JSON to Go Struct Generator",
+    summary:
+      "Generate Go structs from a JSON sample, with json tags, int64 or float64 widths, pointers for null fields and omitempty for optional keys.",
+    description:
+      "Generate Go structs from JSON with json tags, int64 or float64 widths, pointers for null values and omitempty for optional keys. Runs in your browser.",
+    category: "JSON",
+  },
 ];
 
 export const PLANNED_TOOLS: Array<{ name: string; summary: string }> = [];

@@ -13,7 +13,8 @@ import {
 describe("inferType", () => {
   it("maps the primitive kinds", () => {
     expect(inferType("x")).toEqual({ kind: "string" });
-    expect(inferType(1.5)).toEqual({ kind: "number" });
+    expect(inferType(1.5)).toEqual({ kind: "number", integer: false });
+    expect(inferType(7)).toEqual({ kind: "number", integer: true });
     expect(inferType(false)).toEqual({ kind: "boolean" });
     expect(inferType(null)).toEqual({ kind: "null" });
   });

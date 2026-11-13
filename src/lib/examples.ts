@@ -206,3 +206,39 @@ export const TYPES_EXAMPLE = `[
     "creditBalance": 0
   }
 ]`;
+
+/**
+ * Order payload for the Go generator. Every Go-specific decision is visible at
+ * once: `api_url` exercises the initialism rule, the second order omits
+ * `unit_price` (→ `,omitempty`), `coupon_code` is null in one record (→
+ * `*string`), and `unit_price` mixes 19.5 with 4 (→ `float64`, not `int64`).
+ */
+export const GO_EXAMPLE = `[
+  {
+    "id": 8891,
+    "api_url": "https://api.example.com/v1/orders",
+    "customer": {
+      "id": "c_8812",
+      "email": "ada@example.com"
+    },
+    "items": [
+      { "sku": "J-01", "qty": 2, "unit_price": 19.5 },
+      { "sku": "J-07", "qty": 1 }
+    ],
+    "coupon_code": null,
+    "created_at": "2026-11-01T09:30:00Z"
+  },
+  {
+    "id": 8892,
+    "api_url": "https://api.example.com/v1/orders",
+    "customer": {
+      "id": "c_8813",
+      "email": "alan@example.com"
+    },
+    "items": [
+      { "sku": "B-12", "qty": 1, "unit_price": 4 }
+    ],
+    "coupon_code": "LAUNCH10",
+    "created_at": "2026-11-02T11:00:00Z"
+  }
+]`;

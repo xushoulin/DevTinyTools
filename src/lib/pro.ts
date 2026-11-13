@@ -33,6 +33,12 @@ export const TYPE_FREE_CHAR_LIMIT = 1_000_000;
 /** Pro-tier cap for type generation, in characters (roughly 10 MB of JSON). */
 export const TYPE_PRO_CHAR_LIMIT = 10_000_000;
 
+/** Free-tier cap for Go struct generation, in characters (roughly 1 MB of JSON). */
+export const GO_FREE_CHAR_LIMIT = 1_000_000;
+
+/** Pro-tier cap for Go struct generation, in characters (roughly 10 MB of JSON). */
+export const GO_PRO_CHAR_LIMIT = 10_000_000;
+
 export const PRO_PRICE_MONTHLY = "$9";
 export const PRO_PRICE_LIFETIME = "$29";
 

@@ -20,7 +20,13 @@
 
 export type InferredType =
   | { kind: "string" }
-  | { kind: "number" }
+  /**
+   * `integer` records whether every sampled value was a whole number. It only
+   * matters to targets that distinguish numeric widths (Go's int64 vs float64);
+   * TypeScript and Zod render both as `number`, so the flag never appears in
+   * those outputs nor in `typeSignature`.
+   */
+  | { kind: "number"; integer?: boolean }
   | { kind: "boolean" }
   | { kind: "null" }
   | { kind: "unknown" }
@@ -57,7 +63,7 @@ function inferAt(value: unknown, depth: number, maxDepth: number): InferredType 
     case "string":
       return { kind: "string" };
     case "number":
-      return { kind: "number" };
+      return { kind: "number", integer: Number.isInteger(value) };
     case "boolean":
       return { kind: "boolean" };
     case "object":
@@ -112,8 +118,18 @@ export function mergeTypes(left: InferredType, right: InferredType): InferredTyp
     return { kind: "array", items: mergeTypes(left.items, right.items) };
   }
 
+  if (left.kind === "number" && right.kind === "number") {
+    // A whole number next to a fractional one must widen to a float; two whole
+    // numbers stay integers. `undefined` is treated as integer, which is what
+    // the emitters assume when they see a hand-built shape.
+    const leftInteger = left.integer ?? true;
+    const rightInteger = right.integer ?? true;
+    if (leftInteger === rightInteger) return left;
+    return { kind: "number", integer: false };
+  }
+
   if (left.kind === right.kind) {
-    // string / number / boolean / null: identical shapes, nothing to merge.
+    // string / boolean / null: identical shapes, nothing to merge.
     return left;
   }
 

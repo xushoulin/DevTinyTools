@@ -26,4 +26,5 @@ export const TOOL_PAGE_DATES: Record<string, string> = {
   "/json-escape": "2026-11-02",
   "/json-to-csv": "2026-11-12",
   "/json-to-typescript": "2026-11-13",
+  "/json-to-go": "2026-11-13",
 };
