@@ -1,4 +1,5 @@
 import { AdSlot } from "@/components/ad-slot";
+import Link from "next/link";
 import { ContentSection, ProseList, StepList } from "@/components/content-section";
 import { FaqSection } from "@/components/faq-section";
 import { JsonLd } from "@/components/json-ld";
@@ -212,7 +213,15 @@ export default function JsonToGoPage() {
               directions, the reliable Go answer is a pointer or a wrapper type with an{" "}
               <code className="font-mono text-[12px]">IsSet</code> flag. The generator does not
               invent wrappers, because it cannot know which fields your business logic needs to
-              tell apart — it picks the simplest type that round-trips the data it was shown.
+              tell apart — it picks the simplest type that round-trips the data it was shown.{" "}
+              <Link
+                href="/guides/convert-json-to-go-struct"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                The full guide
+              </Link>{" "}
+              covers the whole picture, including the float64 path and what omitempty really
+              skips.
             </p>
           </ContentSection>
 
