@@ -229,7 +229,15 @@ export default function JsonToJavaPage() {
               >
                 your sample is not a schema
               </Link>
-              , and it applies to Java unchanged.
+              , and it applies to Java unchanged. For the parts that are Jackson-specific — primitive
+              versus boxed, null versus absent, records and nested classes — read{" "}
+              <Link
+                href="/guides/convert-json-to-java-pojo"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                primitive or boxed, and why it matters
+              </Link>
+              .
             </p>
           </ContentSection>
 

@@ -231,7 +231,17 @@ export default function JsonToCsharpPage() {
               >
                 your sample is not a schema
               </Link>
-              , and it holds for C# as much as for TypeScript.
+              , and it holds for C# as much as for TypeScript. For the parts specific to
+              System.Text.Json — what <code className="font-mono text-[12px]">required</code> adds
+              over <code className="font-mono text-[12px]">#nullable enable</code>, and why a
+              mixed-type field becomes a JsonElement — read{" "}
+              <Link
+                href="/guides/convert-json-to-csharp-class"
+                className="text-blue-700 underline underline-offset-2"
+              >
+                nullable annotations, CS8618 and JsonElement
+              </Link>
+              .
             </p>
           </ContentSection>
 

@@ -109,6 +109,8 @@ describe("GUIDES registry", () => {
       "convert-json-to-csv",
       "generate-typescript-types-from-json",
       "convert-json-to-go-struct",
+      "convert-json-to-java-pojo",
+      "convert-json-to-csharp-class",
     ];
 
     expect(GUIDES.map((guide) => guide.slug)).toEqual(expected);

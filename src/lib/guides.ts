@@ -287,6 +287,48 @@ export const GUIDES: GuideDefinition[] = [
       "convert-json-to-csv",
     ],
   },
+  {
+    slug: "convert-json-to-java-pojo",
+    href: "/guides/convert-json-to-java-pojo",
+    title: "JSON to Java POJOs: primitive or boxed, and why it matters",
+    shortTitle: "Typing Java",
+    description:
+      "Primitive int hides a missing key behind 0. What Jackson does with null and absent values, why nested classes must be static, and when a record beats a POJO.",
+    summary:
+      "A generated POJO with int and double fields compiles, binds the sample and then answers 0 where the document said nothing. What Jackson actually does with null, absent and zero — and the four declarations that keep them apart.",
+    lede:
+      "Java has no way to write “this key was not sent” in an int, and Jackson will not complain: it fills the primitive with 0 and moves on. That single decision, made per field and invisible in the sample, is the difference between a model that reports the document and one that invents values for it.",
+    publishedAt: "2026-11-13",
+    readingMinutes: 9,
+    topic: "Typing",
+    relatedTool: { href: "/json-to-java", name: "JSON to Java" },
+    related: [
+      "convert-json-to-go-struct",
+      "convert-json-to-csharp-class",
+      "generate-typescript-types-from-json",
+    ],
+  },
+  {
+    slug: "convert-json-to-csharp-class",
+    href: "/guides/convert-json-to-csharp-class",
+    title: "JSON to C#: nullable annotations, CS8618 and JsonElement",
+    shortTitle: "Typing C#",
+    description:
+      "Why a required property needs a default, what string? promises, and why a mixed-type field becomes a JsonElement that dies with its document.",
+    summary:
+      "System.Text.Json binds by exact spelling, fills missing keys with whatever the initialiser said, and turns an object-typed property into a JsonElement whose lifetime is shorter than the object that holds it. The three places a generated class file is wrong by default.",
+    lede:
+      "A generated C# class compiles under #nullable enable and binds the sample response, which makes it look finished. What it does not tell you is that a missing key leaves an initialised default in place, that a mixed-type field is a view into a document someone else may dispose, and that required means something the compiler can enforce if you ask it to.",
+    publishedAt: "2026-11-13",
+    readingMinutes: 9,
+    topic: "Typing",
+    relatedTool: { href: "/json-to-csharp", name: "JSON to C#" },
+    related: [
+      "convert-json-to-java-pojo",
+      "generate-typescript-types-from-json",
+      "convert-json-to-go-struct",
+    ],
+  },
 ];
 
 export function getGuide(slug: string): GuideDefinition | undefined {
