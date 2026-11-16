@@ -111,10 +111,18 @@ export default function HomePage() {
                 Tools
               </h2>
               <p className="mt-1.5 max-w-2xl text-sm text-slate-600">
-                Five JSON tools covering the tasks that come up most often: reading a
-                minified payload, checking why a document is rejected, shrinking it before
-                shipping, seeing exactly what changed between two versions, and turning a
-                JSON array into a spreadsheet-ready CSV.
+                {TOOLS.length} JSON tools covering the tasks that come up most often:
+                reading a minified payload, checking why a document is rejected, shrinking
+                it before shipping, seeing exactly what changed between two versions,
+                turning a JSON array into a spreadsheet-ready CSV, and generating models
+                in TypeScript, Go, Java, C# or Python from a sample.{" "}
+                <Link
+                  href="/tools"
+                  className="text-blue-700 underline underline-offset-2"
+                >
+                  Compare all {TOOLS.length}
+                </Link>
+                .
               </p>
             </div>
             <span className="rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-500">

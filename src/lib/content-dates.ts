@@ -12,6 +12,7 @@
  */
 export const CORE_PAGE_DATES = {
   "/": "2026-10-29",
+  "/tools": "2026-11-13",
   "/about": "2026-10-23",
   "/contact": "2026-10-21",
   "/privacy-policy": "2026-10-22",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { GUIDES, formatGuideDate } from "@/lib/guides";
+import { TOOLS } from "@/lib/tools";
 import { pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
@@ -65,24 +66,13 @@ export default function GuidesIndexPage() {
         </ul>
 
         <p className="mt-8 text-sm leading-relaxed text-slate-600">
-          Looking for the tools instead? Start with the{" "}
-          <Link href="/json-formatter" className="text-blue-700 underline underline-offset-2">
-            JSON Formatter
+          Looking for the tools instead? Every page is listed in{" "}
+          <Link href="/tools" className="text-blue-700 underline underline-offset-2">
+            all {TOOLS.length} tools
           </Link>
-          , the{" "}
-          <Link href="/json-validator" className="text-blue-700 underline underline-offset-2">
-            JSON Validator
-          </Link>{" "}
-          or the{" "}
-          <Link href="/json-minifier" className="text-blue-700 underline underline-offset-2">
-            JSON Minifier
-          </Link>{" "}
-          or the{" "}
-          <Link href="/json-diff" className="text-blue-700 underline underline-offset-2">
-            JSON Diff
-          </Link>
-          .
+          , grouped by the task you are trying to finish.
         </p>
+
       </div>
 
       <JsonLd

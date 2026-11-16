@@ -21,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: absoluteUrl("/tools"),
+      lastModified: new Date(CORE_PAGE_DATES["/tools"]),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: absoluteUrl("/about"),
       lastModified: new Date(CORE_PAGE_DATES["/about"]),
       changeFrequency: "monthly",
