@@ -12,7 +12,7 @@ const PATH = "/tools";
 export const metadata = pageMetadata({
   title: "JSON tools that run in your browser",
   description:
-    "Thirteen JSON tools that run in your browser: format, validate, minify, diff, convert to and from CSV and YAML, and generate TypeScript, Go, Java, C# or Python models.",
+    "Thirteen JSON tools that run in your browser: format, validate, minify, diff, convert to and from CSV or YAML, and generate typed models for five languages.",
   path: PATH,
 });
 
