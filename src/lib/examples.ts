@@ -357,3 +357,44 @@ export const PYTHON_EXAMPLE = `[
     "note": "leave at door"
   }
 ]`;
+
+/**
+ * A deployment-style config, the shape people actually meet YAML in: nested
+ * maps, a list of objects, numbers that look like strings ("8080"), a null and
+ * a boolean. The YAML twin below is what the reverse direction starts from.
+ */
+export const JSON_TO_YAML_EXAMPLE = `{
+  "service": "checkout",
+  "image": "registry.example.com/checkout:1.8.2",
+  "replicas": 3,
+  "port": "8080",
+  "environment": {
+    "LOG_LEVEL": "info",
+    "RETRIES": 5,
+    "DRY_RUN": false,
+    "PROXY_URL": null
+  },
+  "paths": ["/healthz", "/metrics", "/v1/checkout"],
+  "limits": {
+    "memory": "512Mi",
+    "cpu": "750m"
+  }
+}`;
+
+export const YAML_TO_JSON_EXAMPLE = `service: checkout
+image: registry.example.com/checkout:1.8.2
+replicas: 3
+port: "8080"
+environment:
+  LOG_LEVEL: info
+  RETRIES: 5
+  DRY_RUN: false
+  PROXY_URL: null
+paths:
+  - /healthz
+  - /metrics
+  - /v1/checkout
+limits:
+  memory: 512Mi
+  cpu: 750m
+`;

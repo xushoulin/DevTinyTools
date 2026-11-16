@@ -117,6 +117,16 @@ export const TOOLS: ToolDefinition[] = [
     category: "JSON",
   },
   {
+    href: "/json-to-yaml",
+    name: "JSON to YAML",
+    heading: "JSON to YAML Converter (and back)",
+    summary:
+      "Convert JSON to YAML or YAML to JSON in both directions, with multi-document support, error line numbers and YAML 1.2 typing rules.",
+    description:
+      "Convert between JSON and YAML in your browser: both directions, multiple documents become a JSON array, quoted values keep their type, errors report a line number.",
+    category: "JSON",
+  },
+  {
     href: "/json-to-python",
     name: "JSON to Python",
     heading: "JSON to Python Class Generator",

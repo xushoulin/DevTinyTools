@@ -32,4 +32,5 @@ export const TOOL_PAGE_DATES: Record<string, string> = {
   "/json-to-java": "2026-11-13",
   "/json-to-csharp": "2026-11-13",
   "/json-to-python": "2026-11-13",
+  "/json-to-yaml": "2026-11-16",
 };

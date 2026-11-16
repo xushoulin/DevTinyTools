@@ -12,7 +12,7 @@ const PATH = "/tools";
 export const metadata = pageMetadata({
   title: "JSON tools that run in your browser",
   description:
-    "Twelve JSON tools that run in your browser: format, validate, minify, diff, convert to and from CSV, and generate TypeScript, Go, Java, C# or Python models.",
+    "Thirteen JSON tools that run in your browser: format, validate, minify, diff, convert to and from CSV and YAML, and generate TypeScript, Go, Java, C# or Python models.",
   path: PATH,
 });
 
@@ -34,7 +34,7 @@ const GROUPS: Array<{ id: string; title: string; blurb: string; hrefs: string[] 
     title: "Compare and convert",
     blurb:
       "What changed between two versions, and moving data between JSON and a spreadsheet without retyping it.",
-    hrefs: ["/json-diff", "/json-to-csv", "/csv-to-json"],
+    hrefs: ["/json-diff", "/json-to-csv", "/csv-to-json", "/json-to-yaml"],
   },
   {
     id: "generate",
@@ -64,6 +64,11 @@ const DECISIONS: Array<{ want: string; href: string; label: string }> = [
   { want: "See exactly what changed between two versions", href: "/json-diff", label: "Diff" },
   { want: "Open a JSON array in Excel or Sheets", href: "/json-to-csv", label: "JSON to CSV" },
   { want: "Turn a CSV export back into JSON", href: "/csv-to-json", label: "CSV to JSON" },
+  {
+    want: "Move a config between JSON and YAML",
+    href: "/json-to-yaml",
+    label: "JSON to YAML",
+  },
   {
     want: "Get TypeScript interfaces, Zod or JSON Schema",
     href: "/json-to-typescript",
