@@ -27,6 +27,7 @@ export const metadata = pageMetadata({
 const SECTIONS = [
   { id: "input", label: "What happens to your input" },
   { id: "not-collected", label: "Information not collected" },
+  { id: "pro", label: "Pro licence and payments" },
   { id: "logs", label: "Server logs" },
   { id: "storage", label: "Cookies and local storage" },
   { id: "analytics", label: "Analytics" },
@@ -52,15 +53,19 @@ export default function PrivacyPolicyPage() {
         <h2 className="text-sm font-semibold text-emerald-900">In short</h2>
         <ul className="mt-2 space-y-1.5 text-[13px] leading-relaxed text-emerald-900">
           <li>JSON you paste is processed inside your browser and is never uploaded.</li>
-          <li>There are no accounts, no profiles and no user database.</li>
           <li>
-            This site sets no cookies of its own and writes nothing to localStorage.
+            There are no accounts or user profiles. An optional paid Pro licence is
+            stored in this browser only — see section 3.
+          </li>
+          <li>
+            This site sets no cookies of its own. The only local value it stores is
+            an activated Pro licence key, if you buy one.
             {ANALYTICS_ACTIVE && ADSENSE_ACTIVE
-              ? " Google AdSense and Google Analytics are both loaded, and each may set its own cookies — see section 4."
+              ? " Google AdSense and Google Analytics are both loaded, and each may set its own cookies — see section 5."
               : ANALYTICS_ACTIVE
-                ? " Google Analytics is loaded and may set its own cookies — see section 4."
+                ? " Google Analytics is loaded and may set its own cookies — see section 5."
                 : ADSENSE_ACTIVE
-                  ? " Google AdSense is loaded to verify the site, and Google may set its own cookies — see section 4."
+                  ? " Google AdSense is loaded to verify the site, and Google may set its own cookies — see section 5."
                   : ""}
           </li>
           <li>
@@ -95,13 +100,58 @@ export default function PrivacyPolicyPage() {
           </h2>
           <p className="mt-2">
             This site does not ask for, and does not collect: names, email addresses, account
-            credentials, payment details, the contents of the tool editors, or any profile
-            information. There is no sign-up form and no newsletter.
+            credentials, the contents of the tool editors, or any profile information. There
+            is no sign-up form and no newsletter.
+          </p>
+          <p className="mt-2">
+            Payment details are never collected by this site. If you buy Pro, the purchase
+            is handled entirely by Lemon Squeezy as merchant of record; this site receives
+            only an activation result, never a card number or billing address. See section 3.
+          </p>
+        </section>
+
+        <section id="pro">
+          <h2 className="text-lg font-semibold text-slate-900">3. Pro licence and payments</h2>
+          <p className="mt-2">
+            Some tools offer an optional Pro tier with higher limits. It is a one-time
+            licence key, not a subscription and not an account. The checkout is hosted by
+            Lemon Squeezy, which acts as merchant of record: it collects payment, handles VAT
+            and sales tax, and applies its own{" "}
+            <a
+              href="https://www.lemonsqueezy.com/privacy"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="text-blue-700 underline underline-offset-2"
+            >
+              privacy policy
+            </a>
+            . This site never sees or stores your payment details.
+          </p>
+          <p className="mt-2">
+            When you activate a licence key, the key, an instance identifier and an
+            activation timestamp are validated against the Lemon Squeezy API and then saved
+            in this browser&apos;s <code>localStorage</code>. That is the only thing this
+            site&apos;s own code writes to local storage. It stays on your device, is never
+            uploaded to this site, and can be removed at any time by clearing site data or
+            using the deactivate control in the licence dialog.
+          </p>
+          <p className="mt-2">
+            The licence unlocks higher processing limits in the browser; it does not change
+            how your JSON is handled. Purchased data is still processed locally and is never
+            uploaded. Refund terms are described on the{" "}
+            <Link href="/refund" className="text-blue-700 underline underline-offset-2">
+              refund page
+            </Link>
+            , and the terms of sale are on the{" "}
+            <Link href="/terms" className="text-blue-700 underline underline-offset-2">
+              terms page
+            </Link>
+            .
           </p>
         </section>
 
         <section id="logs">
-          <h2 className="text-lg font-semibold text-slate-900">3. Server logs</h2>
+          <h2 className="text-lg font-semibold text-slate-900">4. Server logs</h2>
           <p className="mt-2">
             The site is served as static pages by a hosting provider. Like any web host, that
             provider may record standard technical data for each request — IP address, user
@@ -114,11 +164,12 @@ export default function PrivacyPolicyPage() {
 
         <section id="storage">
           <h2 className="text-lg font-semibold text-slate-900">
-            4. Cookies and local storage
+            5. Cookies and local storage
           </h2>
           <p className="mt-2">
             This site&apos;s own code sets no cookies and writes nothing to
-            localStorage or sessionStorage — your editor contents are never stored.
+            sessionStorage, and the only value it stores in localStorage is an activated
+            Pro licence key (section 3). Your editor contents are never stored.
           </p>
           {ADSENSE_ACTIVE ? (
             <p className="mt-2">
@@ -160,7 +211,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section id="analytics">
-          <h2 className="text-lg font-semibold text-slate-900">5. Analytics</h2>
+          <h2 className="text-lg font-semibold text-slate-900">6. Analytics</h2>
           {GA_MEASUREMENT_ID ? (
             <>
               <p className="mt-2">
@@ -217,7 +268,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section id="ads">
-          <h2 className="text-lg font-semibold text-slate-900">6. Advertising</h2>
+          <h2 className="text-lg font-semibold text-slate-900">7. Advertising</h2>
           {ADSENSE_ACTIVE ? (
             <>
               <p className="mt-2">
@@ -287,7 +338,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section id="third-parties">
-          <h2 className="text-lg font-semibold text-slate-900">7. Third-party links</h2>
+          <h2 className="text-lg font-semibold text-slate-900">8. Third-party links</h2>
           <p className="mt-2">
             Some pages link to external resources, such as documentation or specifications.
             Those sites have their own privacy policies, and this one does not cover them.
@@ -296,7 +347,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section id="children">
-          <h2 className="text-lg font-semibold text-slate-900">8. Children</h2>
+          <h2 className="text-lg font-semibold text-slate-900">9. Children</h2>
           <p className="mt-2">
             This site is aimed at software developers and is not directed at children. It does
             not knowingly collect personal information from anyone, including children under
@@ -305,7 +356,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section id="choices">
-          <h2 className="text-lg font-semibold text-slate-900">9. Your choices</h2>
+          <h2 className="text-lg font-semibold text-slate-900">10. Your choices</h2>
           <p className="mt-2">
             Because the tools do not collect personal data, there is nothing stored here to
             access, correct or delete. You can use the site without providing any information
@@ -315,7 +366,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section id="changes">
-          <h2 className="text-lg font-semibold text-slate-900">10. Changes to this policy</h2>
+          <h2 className="text-lg font-semibold text-slate-900">11. Changes to this policy</h2>
           <p className="mt-2">
             Any material change — adding analytics, enabling advertising, introducing accounts
             — will be reflected here, and the date at the top of the page will be updated. The
@@ -325,7 +376,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section id="contact">
-          <h2 className="text-lg font-semibold text-slate-900">11. Contact</h2>
+          <h2 className="text-lg font-semibold text-slate-900">12. Contact</h2>
           <p className="mt-2">
             Questions about this policy can go to the address listed on the{" "}
             <Link href="/contact" className="text-blue-700 underline underline-offset-2">

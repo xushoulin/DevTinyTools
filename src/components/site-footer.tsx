@@ -14,6 +14,8 @@ const SITE_LINKS: FooterLink[] = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
   { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms of Sale" },
+  { href: "/refund", label: "Refund Policy" },
   { href: GITHUB_REPO_URL, label: "Source on GitHub", external: true },
 ];
 

@@ -20,7 +20,16 @@ describe("sitemap content dates", () => {
 
   it("lists the pages outside the sitemap registries", () => {
     expect(Object.keys(CORE_PAGE_DATES).sort()).toEqual(
-      ["/", "/tools", "/about", "/contact", "/guides", "/privacy-policy"].sort(),
+      [
+        "/",
+        "/tools",
+        "/about",
+        "/contact",
+        "/guides",
+        "/privacy-policy",
+        "/terms",
+        "/refund",
+      ].sort(),
     );
   });
 

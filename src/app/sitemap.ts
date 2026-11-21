@@ -44,6 +44,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    {
+      url: absoluteUrl("/terms"),
+      lastModified: new Date(CORE_PAGE_DATES["/terms"]),
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
+    {
+      url: absoluteUrl("/refund"),
+      lastModified: new Date(CORE_PAGE_DATES["/refund"]),
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
   ];
 
   const tools: MetadataRoute.Sitemap = TOOLS.map((tool) => ({
